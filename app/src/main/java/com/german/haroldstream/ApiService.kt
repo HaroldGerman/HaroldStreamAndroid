@@ -23,6 +23,10 @@ interface ApiService {
     @Headers("ngrok-skip-browser-warning: any_value")
     @DELETE("canciones/{archivo}")
     suspend fun eliminarCancion(@Path("archivo") archivo: String): DeleteResponse
+
+    @Headers("ngrok-skip-browser-warning: any_value")
+    @GET("api/version")
+    suspend fun obtenerVersion(): VersionResponse
 }
 
 data class ResponseData(
@@ -51,4 +55,11 @@ data class Cancion(
     var isFavorite: Boolean = false,
     var isDownloaded: Boolean = false,
     var localPath: String? = null
+)
+
+data class VersionResponse(
+    val versionCode: Int,
+    val versionName: String,
+    val releaseNotes: String,
+    val minVersionCode: Int
 )

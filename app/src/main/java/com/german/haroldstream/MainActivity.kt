@@ -304,6 +304,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
 
         cargarHistorialYRecomendaciones()
+        comprobarActualizaciones()
     }
 
     private fun comprobarEstadoAutorizacion() {
@@ -342,6 +343,49 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                 }
             }
         }
+    }
+
+    private fun comprobarActualizaciones() {
+        val api = obtenerApiService() ?: return
+        lifecycleScope.launch {
+            try {
+                val response = api.obtenerVersion()
+                val packageInfo = packageManager.getPackageInfo(packageName, 0)
+                val currentVersionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    packageInfo.longVersionCode.toInt()
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageInfo.versionCode
+                }
+
+                if (response.versionCode > currentVersionCode) {
+                    mostrarDialogoActualizacion(response.versionName, response.releaseNotes)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun mostrarDialogoActualizacion(nuevaVersionName: String, notasNuevaVersion: String) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("⚡ Nueva actualización disponible (v$nuevaVersionName)")
+        builder.setMessage("Notas de la versión:\n$notasNuevaVersion\n\n¿Deseas descargar la actualización ahora?")
+        
+        builder.setPositiveButton("Actualizar") { _, _ ->
+            var baseUrl = DEFAULT_URL.trim()
+            if (!baseUrl.endsWith("/")) baseUrl += "/"
+            val downloadUrl = "${baseUrl}api/download-apk"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
+            startActivity(intent)
+        }
+        
+        builder.setNegativeButton("Más tarde") { dialog, _ ->
+            dialog.dismiss()
+        }
+        
+        val dialog = builder.create()
+        dialog.show()
     }
 
     private fun mostrarPantallaRegistro() {

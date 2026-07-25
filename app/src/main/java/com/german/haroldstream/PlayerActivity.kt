@@ -31,7 +31,7 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     private lateinit var tvTotalTime: TextView
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnPlayerStar: ImageButton
-    private lateinit var btnDownloadMobile: Button
+    private lateinit var btnDownloadMobile: ImageButton
 
     private var currentCancionLocal: Cancion? = null
 
@@ -62,7 +62,7 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
         val btnRewind = findViewById<ImageButton>(R.id.btn_rewind)
         val btnForward = findViewById<ImageButton>(R.id.btn_forward)
-        btnDownloadMobile = findViewById(R.id.btn_download_mobile)
+        btnDownloadMobile = findViewById<ImageButton>(R.id.btn_download_mobile)
 
         val streamUrl = intent.getStringExtra(EXTRA_STREAM_URL)
         val title = intent.getStringExtra(EXTRA_TITLE) ?: "HaroldSound Audio"
@@ -167,11 +167,11 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         currentCancionLocal?.let { cancion ->
             val esFav = LocalMusicManager.esFavorito(this, cancion)
             if (esFav) {
-                btnPlayerStar.setImageResource(R.drawable.ic_spotify_check)
-                btnPlayerStar.clearColorFilter()
+                btnPlayerStar.setImageResource(R.drawable.ic_heart_solid)
+                btnPlayerStar.setColorFilter(android.graphics.Color.parseColor("#a855f7"))
             } else {
-                btnPlayerStar.setImageResource(R.drawable.ic_spotify_plus)
-                btnPlayerStar.clearColorFilter()
+                btnPlayerStar.setImageResource(R.drawable.ic_heart_outline)
+                btnPlayerStar.setColorFilter(android.graphics.Color.parseColor("#31124a"))
             }
 
             val yaDescargado = LocalMusicManager.esDescargadoLocalmente(this, cancion)
@@ -341,7 +341,7 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
         val baseUrl = if (MainActivity.DEFAULT_URL.endsWith("/")) MainActivity.DEFAULT_URL else "${MainActivity.DEFAULT_URL}/"
         val endpoint = if (isAudioOnly) {
-            "${baseUrl}api/recortar-audio-portada?url=${Uri.encode(originalUrl)}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&start=$start&end=$end"
+            "${baseUrl}api/recortar-audio-portada?url=${Uri.encode(originalUrl)}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&start=$start&end=$end&title=${Uri.encode(cancion.titulo ?: "")}&artist=${Uri.encode(cancion.canal ?: "")}"
         } else {
             "${baseUrl}api/recortar-video?url=${Uri.encode(originalUrl)}&start=$start&end=$end"
         }

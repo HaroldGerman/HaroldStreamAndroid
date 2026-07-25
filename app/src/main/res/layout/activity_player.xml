@@ -10,7 +10,7 @@
     android:paddingBottom="20dp"
     android:gravity="center_horizontal">
 
-    <!-- Header superior con botón colapsar (Flecha abajo v estilo Spotify) y Botón (+ / Check) -->
+    <!-- Header superior con botón colapsar (V) y Botón Descargar (Top Right) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,8 +23,8 @@
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/arrow_down_float"
-            app:tint="#000000"
+            android:src="@drawable/ic_chevron_down"
+            app:tint="#31124a"
             android:contentDescription="Colapsar a mini reproductor" />
 
         <TextView
@@ -38,22 +38,13 @@
             android:gravity="center" />
 
         <ImageButton
-            android:id="@+id/btn_share"
+            android:id="@+id/btn_download_mobile"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_share"
-            app:tint="#000000"
-            android:contentDescription="Compartir canción"
-            android:layout_marginEnd="4dp" />
-
-        <ImageButton
-            android:id="@+id/btn_player_star"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_spotify_plus"
-            android:contentDescription="Agregar a Favoritos" />
+            android:src="@drawable/ic_download_thin"
+            app:tint="#31124a"
+            android:contentDescription="Descargar MP3" />
     </LinearLayout>
 
     <!-- Portada del Álbum con CardView y Sombra Elevada -->
@@ -112,9 +103,9 @@
             android:id="@+id/sb_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:progressBackgroundTint="#333333"
-            android:progressTint="#8E44AD"
-            android:thumbTint="#000000" />
+            android:progressBackgroundTint="#D1D1D6"
+            android:progressTint="#31124a"
+            android:thumbTint="#31124a" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -159,8 +150,8 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_media_previous"
-            app:tint="#000000"
+            android:src="@drawable/ic_rewind_solid"
+            app:tint="#31124a"
             android:contentDescription="Canción Anterior" />
 
         <ImageButton
@@ -170,7 +161,7 @@
             android:layout_marginHorizontal="28dp"
             android:background="@drawable/bg_button_gradient"
             android:src="@android:drawable/ic_media_pause"
-            app:tint="#000000"
+            app:tint="#FFFFFF"
             android:contentDescription="Play o Pausa" />
 
         <ImageButton
@@ -178,23 +169,42 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Canción Siguiente"
-            android:src="@android:drawable/ic_media_next"
-            app:tint="#000000" />
+            android:src="@drawable/ic_forward_solid"
+            app:tint="#31124a"
+            android:contentDescription="Canción Siguiente" />
     </LinearLayout>
 
-    <!-- Botón Descargar MP3 en Celular -->
+    <!-- Botones extras: Compartir y Favoritos (Estilo Web) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:layout_marginBottom="24dp">
 
-    <!-- Espacio flexible para empujar la marca al fondo -->
-    <android.widget.Button
-        android:id="@+id/btn_download_mobile"
-        android:layout_width="90dp"
-        android:layout_height="20dp"
-        android:background="@drawable/bg_button_pink"
-        android:text="⬇ DESCARGAR"
-        android:textColor="#FFFFFF"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        <ImageButton
+            android:id="@+id/btn_share"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_share_thin"
+            app:tint="#31124a"
+            android:contentDescription="Compartir canción" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btn_player_star"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_heart_outline"
+            app:tint="#a855f7"
+            android:contentDescription="Agregar a Favoritos" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
