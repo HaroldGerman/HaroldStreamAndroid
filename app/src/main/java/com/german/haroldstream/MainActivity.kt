@@ -412,6 +412,9 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
     private fun desbloquearApp() {
         layoutAuthOverlay.visibility = View.GONE
+        lifecycleScope.launch {
+            UpdateManager.checkForUpdates(this@MainActivity, DEFAULT_URL)
+        }
     }
 
     private fun reproducirCancionSeleccionada(cancion: Cancion) {
