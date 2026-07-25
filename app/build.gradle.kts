@@ -7,13 +7,13 @@ plugins {
 android {
     namespace = "com.german.haroldstream"
     compileSdk {
-        version = release(37)
+        version = release(36)
     }
 
     defaultConfig {
         applicationId = "com.german.haroldstream"
         minSdk = 24
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 5
         versionName = "5.0"
 
