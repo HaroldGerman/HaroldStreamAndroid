@@ -178,23 +178,24 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Canción Siguiente"
             android:src="@android:drawable/ic_media_next"
-            app:tint="#000000"
-            android:contentDescription="Canción Siguiente" />
+            app:tint="#000000" />
     </LinearLayout>
 
     <!-- Botón Descargar MP3 en Celular -->
+
+    <!-- Espacio flexible para empujar la marca al fondo -->
     <android.widget.Button
         android:id="@+id/btn_download_mobile"
         android:layout_width="90dp"
         android:layout_height="20dp"
+        android:background="@drawable/bg_button_pink"
         android:text="⬇ DESCARGAR"
-        android:textSize="13sp"
-        android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:background="@drawable/bg_button_pink" />
+        android:textSize="13sp"
+        android:textStyle="bold" />
 
-    <!-- Espacio flexible para empujar la marca al fondo -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
