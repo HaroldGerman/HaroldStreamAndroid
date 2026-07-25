@@ -17,6 +17,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.exoplayer.ExoPlayer
 import coil.load
+import android.content.Intent
+import android.widget.EditText
+import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
@@ -95,6 +101,13 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
         btnCollapse.setOnClickListener {
             finish()
+        }
+
+        val btnShare = findViewById<ImageButton>(R.id.btn_share)
+        btnShare?.setOnClickListener {
+            currentCancionLocal?.let { cancion ->
+                mostrarDialogoCompartir(cancion)
+            }
         }
 
         val p = PlayerManager.getOrCreatePlayer(this)
@@ -240,6 +253,169 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         val minutes = totalSeconds / 60
         val seconds = totalSeconds % 60
         return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    private fun mostrarDialogoCompartir(cancion: Cancion) {
+        val p = PlayerManager.player
+        val currentSec = if (p != null) (p.currentPosition / 1000).toInt() else 0
+        val defaultEnd = currentSec + 15
+
+        val context = this
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 20)
+        }
+
+        val tvInfo = TextView(context).apply {
+            text = "Selecciona el fragmento a recortar (en segundos):"
+            textSize = 14f
+            setPadding(0, 0, 0, 20)
+        }
+        layout.addView(tvInfo)
+
+        val layoutTimes = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+
+        val etStart = EditText(context).apply {
+            hint = "Inicio (seg)"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            setText(currentSec.toString())
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        val etEnd = EditText(context).apply {
+            hint = "Fin (seg)"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            setText(defaultEnd.toString())
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        layoutTimes.addView(etStart)
+        layoutTimes.addView(etEnd)
+        layout.addView(layoutTimes)
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("✂️ Recortar y Compartir Fragmento")
+        builder.setView(layout)
+
+        builder.setPositiveButton("🎵 Estado (Portada + Audio)") { _, _ ->
+            val start = etStart.text.toString().toIntOrNull() ?: 0
+            val end = etEnd.text.toString().toIntOrNull() ?: 15
+            if (start >= 0 && end > start) {
+                descargarYCompartirClip(cancion, start, end, isAudioOnly = true)
+            } else {
+                Toast.makeText(context, "Rango de tiempo inválido", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        builder.setNeutralButton("🎥 Clip de Video") { _, _ ->
+            val start = etStart.text.toString().toIntOrNull() ?: 0
+            val end = etEnd.text.toString().toIntOrNull() ?: 15
+            if (start >= 0 && end > start) {
+                descargarYCompartirClip(cancion, start, end, isAudioOnly = false)
+            } else {
+                Toast.makeText(context, "Rango de tiempo inválido", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
+
+        val alert = builder.create()
+        alert.show()
+    }
+
+    private fun descargarYCompartirClip(cancion: Cancion, start: Int, end: Int, isAudioOnly: Boolean) {
+        val originalUrl = cancion.url ?: ""
+        if (originalUrl.isEmpty()) {
+            Toast.makeText(this, "URL original de YouTube no disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val progressDialog = android.app.ProgressDialog(this).apply {
+            setTitle("Procesando clip...")
+            setMessage("Descargando fragmento desde el servidor...")
+            setCancelable(false)
+            show()
+        }
+
+        val baseUrl = if (MainActivity.DEFAULT_URL.endsWith("/")) MainActivity.DEFAULT_URL else "${MainActivity.DEFAULT_URL}/"
+        val endpoint = if (isAudioOnly) {
+            "${baseUrl}api/recortar-audio-portada?url=${Uri.encode(originalUrl)}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&start=$start&end=$end"
+        } else {
+            "${baseUrl}api/recortar-video?url=${Uri.encode(originalUrl)}&start=$start&end=$end"
+        }
+
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val client = okhttp3.OkHttpClient.Builder()
+                    .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .build()
+
+                val request = okhttp3.Request.Builder()
+                    .url(endpoint)
+                    .get()
+                    .build()
+
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val body = response.body
+                    if (body != null) {
+                        val tempFile = java.io.File(cacheDir, if (isAudioOnly) "HaroldStream_audio.mp4" else "HaroldStream_video.mp4")
+                        if (tempFile.exists()) tempFile.delete()
+
+                        tempFile.outputStream().use { output ->
+                            body.byteStream().copyTo(output)
+                        }
+
+                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                            progressDialog.dismiss()
+                            lanzarIntentCompartirArchivo(tempFile)
+                        }
+                    } else {
+                        throw Exception("Cuerpo de respuesta vacío")
+                    }
+                } else {
+                    throw Exception("Código de error del servidor: ${response.code}")
+                }
+            } catch (e: Exception) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    progressDialog.dismiss()
+                    Toast.makeText(this@PlayerActivity, "Error al procesar fragmento: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun lanzarIntentCompartirArchivo(file: java.io.File) {
+        try {
+            val contentUri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                "com.german.haroldstream.fileprovider",
+                file
+            )
+
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "video/mp4"
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setPackage("com.whatsapp")
+            }
+
+            try {
+                startActivity(shareIntent)
+            } catch (e: Exception) {
+                val generalIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "video/mp4"
+                    putExtra(Intent.EXTRA_STREAM, contentUri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(generalIntent, "Compartir clip con"))
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al compartir archivo: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroy() {

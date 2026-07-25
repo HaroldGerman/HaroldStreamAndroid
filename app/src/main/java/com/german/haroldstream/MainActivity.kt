@@ -75,13 +75,11 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         const val TAB_NUBE = 0
         const val TAB_FAVORITAS = 1
         const val TAB_DESCARGADAS = 2
+        const val DEFAULT_URL = "https://recorded-centers-div-hwy.trycloudflare.com/"
     }
 
     private val PREFS_NAME = "HaroldSoundPrefs"
     private val KEY_HISTORY_JSON = "history_songs_json"
-    
-    // URL del Túnel Cloudflare corriendo en el celular (Termux) o PC
-    private val DEFAULT_URL = "https://desirable-ind-stud-happy.trycloudflare.com/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
