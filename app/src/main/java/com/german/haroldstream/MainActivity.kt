@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         const val TAB_NUBE = 0
         const val TAB_FAVORITAS = 1
         const val TAB_DESCARGADAS = 2
-        const val DEFAULT_URL = "https://recorded-centers-div-hwy.trycloudflare.com/"
+        const val DEFAULT_URL = "https://developers-assumed-opening-encourage.trycloudflare.com/"
     }
 
     private val PREFS_NAME = "HaroldSoundPrefs"
@@ -694,6 +694,8 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             putExtra(PlayerActivity.EXTRA_TITLE, cancion.titulo ?: "Canción")
             putExtra(PlayerActivity.EXTRA_THUMBNAIL, cancion.thumbnail)
             putExtra(PlayerActivity.EXTRA_CANAL, cancion.canal)
+            // Esto asegura que solo exista una instancia del reproductor activa en la pila
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         startActivity(intent)
     }
