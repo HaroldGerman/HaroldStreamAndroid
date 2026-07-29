@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/iv_suggestion_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@android:drawable/ic_menu_search"
+        android:contentDescription="Icono"
+        app:tint="#AAAAAA"/>
+
+    <TextView
+        android:id="@+id/tv_suggestion_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Sugerencia de búsqueda" />
+</LinearLayout>

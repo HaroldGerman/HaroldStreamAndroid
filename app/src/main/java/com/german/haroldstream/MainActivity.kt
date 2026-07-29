@@ -9,9 +9,12 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -35,6 +38,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.os.Handler
 
 class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
@@ -71,15 +75,55 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     private var tabActual = TAB_NUBE
     private var listaCancionesActuales: List<Cancion> = emptyList()
 
+    private lateinit var rvSugerencias: RecyclerView
+    private lateinit var cvSugerenciasContainer: View
+    private lateinit var suggestionAdapter: SuggestionAdapter
+
+    private val debounceHandler = Handler(Looper.getMainLooper())
+    private var debounceRunnable: Runnable? = null
+
     companion object {
         const val TAB_NUBE = 0
         const val TAB_FAVORITAS = 1
         const val TAB_DESCARGADAS = 2
-        const val DEFAULT_URL = "https://developers-assumed-opening-encourage.trycloudflare.com/"
+        const val DEFAULT_URL = "https://months-fire-softball-specifics.trycloudflare.com/"
     }
 
     private val PREFS_NAME = "HaroldSoundPrefs"
     private val KEY_HISTORY_JSON = "history_songs_json"
+
+    class SuggestionAdapter(
+        private var sugerencias: List<String>,
+        private var esHistorial: Boolean,
+        private val onClick: (String) -> Unit
+    ) : RecyclerView.Adapter<SuggestionAdapter.ViewHolder>() {
+
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val tvText: TextView = view.findViewById(R.id.tv_suggestion_text)
+            val ivIcon: ImageView = view.findViewById(R.id.iv_suggestion_icon)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_suggestion, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val texto = sugerencias[position]
+            holder.tvText.text = texto
+            // Si es historial pone el reloj, si es sugerencia pone la lupa
+            holder.ivIcon.setImageResource(if (esHistorial) android.R.drawable.ic_menu_recent_history else android.R.drawable.ic_menu_search)
+            holder.itemView.setOnClickListener { onClick(texto) }
+        }
+
+        override fun getItemCount() = sugerencias.size
+
+        fun actualizarData(nuevaLista: List<String>, historial: Boolean) {
+            sugerencias = nuevaLista
+            esHistorial = historial
+            notifyDataSetChanged()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -213,11 +257,41 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                if (s.isNullOrEmpty() && tabActual == TAB_NUBE) {
+                val query = s.toString().trim()
+                if (query.isEmpty() && tabActual == TAB_NUBE) {
+                    mostrarHistorialBusquedaGlobal()
                     cargarHistorialYRecomendaciones()
+                } else if (tabActual == TAB_NUBE) {
+                    // Cancelar la petición anterior si sigue escribiendo rápido
+                    debounceRunnable?.let { debounceHandler.removeCallbacks(it) }
+                    debounceRunnable = Runnable {
+                        buscarSugerenciasApi(query)
+                    }
+                    debounceHandler.postDelayed(debounceRunnable!!, 250)
                 }
             }
         })
+
+        rvSugerencias = findViewById(R.id.rv_sugerencias)
+        cvSugerenciasContainer = findViewById(R.id.cv_sugerencias_container)
+
+        suggestionAdapter = SuggestionAdapter(emptyList(), true) { terminoSelect ->
+            etBusqueda.setText(terminoSelect)
+            etBusqueda.setSelection(terminoSelect.length)
+            cvSugerenciasContainer.visibility = View.GONE
+            ejecutarBusqueda(etBusqueda, progressBarMain)
+        }
+        rvSugerencias.layoutManager = LinearLayoutManager(this)
+        rvSugerencias.adapter = suggestionAdapter
+
+        // Mostrar historial al hacer click en el buscador
+        etBusqueda.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && etBusqueda.text.toString().trim().isEmpty()) {
+                mostrarHistorialBusquedaGlobal()
+            } else {
+                cvSugerenciasContainer.visibility = View.GONE
+            }
+        }
 
         // --- LISTENERS DE REGISTRO Y VERIFICACIÓN PIN VIA WHATSAPP ---
 
@@ -604,8 +678,44 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
     override fun onPlaybackReady(durationMs: Long) {}
 
+    // --- Funciones para Autocompletado ---
+    private fun mostrarHistorialBusquedaGlobal() {
+        val historial = LocalMusicManager.obtenerHistorialBusquedas(this)
+        if (historial.isNotEmpty()) {
+            suggestionAdapter.actualizarData(historial, true)
+            cvSugerenciasContainer.visibility = View.VISIBLE
+        } else {
+            cvSugerenciasContainer.visibility = View.GONE
+        }
+    }
+
+    private fun buscarSugerenciasApi(query: String) {
+        val api = obtenerApiService() ?: return
+        lifecycleScope.launch {
+            try {
+                val respuesta = api.obtenerSugerencias(query)
+                if (!respuesta.suggestions.isNullOrEmpty()) {
+                    suggestionAdapter.actualizarData(respuesta.suggestions, false)
+                    cvSugerenciasContainer.visibility = View.VISIBLE
+                } else {
+                    cvSugerenciasContainer.visibility = View.GONE
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    // Busca tu método ejecutarBusqueda existente y añádele estas dos líneas arriba:
     private fun ejecutarBusqueda(etBusqueda: EditText, progressBar: ProgressBar) {
         val termino = etBusqueda.text.toString().trim()
+
+        // 1. Ocultar el dropdown y guardar en el historial local al buscar
+        cvSugerenciasContainer.visibility = View.GONE
+        if (termino.isNotEmpty()) {
+            LocalMusicManager.guardarBusquedaHistorial(this, termino)
+        }
+
         if (termino.isEmpty()) {
             cargarHistorialYRecomendaciones()
             return

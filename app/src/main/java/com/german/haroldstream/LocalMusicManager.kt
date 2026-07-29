@@ -17,6 +17,37 @@ object LocalMusicManager {
     private const val PREFS_NAME = "HaroldSoundPrefs"
     private const val KEY_FAVORITES = "key_favorite_songs_json"
 
+    private const val KEY_SEARCH_HISTORY_JSON = "key_search_history_json"
+
+    fun guardarBusquedaHistorial(context: Context, query: String) {
+        if (query.isBlank()) return
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_SEARCH_HISTORY_JSON, null)
+        val historial = try {
+            val listType = object : TypeToken<MutableList<String>>() {}.type
+            Gson().fromJson<MutableList<String>>(json, listType) ?: mutableListOf()
+        } catch (e: Exception) {
+            mutableListOf<String>()
+        }
+
+        historial.remove(query) // Evita duplicados
+        historial.add(0, query) // Añade al inicio
+        if (historial.size > 8) historial.removeAt(historial.size - 1) // Solo guardar las últimas 8
+
+        prefs.edit().putString(KEY_SEARCH_HISTORY_JSON, Gson().toJson(historial)).apply()
+    }
+
+    fun obtenerHistorialBusquedas(context: Context): List<String> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_SEARCH_HISTORY_JSON, null) ?: return emptyList()
+        return try {
+            val listType = object : TypeToken<List<String>>() {}.type
+            Gson().fromJson(json, listType) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     fun guardarFavorito(context: Context, cancion: Cancion) {
         val favoritos = obtenerFavoritos(context).toMutableList()
         favoritos.removeAll { normalizar(it.titulo) == normalizar(cancion.titulo) || (it.id != null && it.id == cancion.id) }

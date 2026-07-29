@@ -13,43 +13,74 @@
         android:orientation="vertical"
         android:layout_above="@+id/layout_mini_player">
 
-        <!-- Header con Buscador -->
-        <LinearLayout
+        <!-- Contenedor Principal Relativo para permitir que la lista flote -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp"
-            android:paddingTop="36dp"
-            android:paddingBottom="10dp"
-            android:gravity="center_vertical"
-            android:background="#F2F2F7">
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
-            <EditText
-                android:id="@+id/et_busqueda"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_weight="1"
-                android:hint="🔍 ¿Qué quieres escuchar?"
-                android:textColorHint="#666666"
-                android:textColor="#000000"
-                android:textSize="14sp"
-                android:paddingHorizontal="16dp"
-                android:background="@drawable/bg_edittext"
-                android:inputType="text"
-                android:imeOptions="actionSearch" />
+            <!-- Header con Buscador (Tu diseño original intacto) -->
+            <LinearLayout
+                android:id="@+id/layout_buscador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingTop="36dp"
+                android:paddingBottom="10dp"
+                android:gravity="center_vertical"
+                android:background="#F2F2F7">
 
-            <android.widget.Button
-                android:id="@+id/btn_buscar"
-                android:layout_width="wrap_content"
-                android:layout_height="46dp"
-                android:layout_marginStart="10dp"
-                android:text="BUSCAR"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:paddingHorizontal="18dp"
-                android:background="@drawable/bg_button_gradient" />
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/et_busqueda"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:hint="🔍 ¿Qué quieres escuchar?"
+                    android:textColorHint="#666666"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:paddingHorizontal="16dp"
+                    android:background="@drawable/bg_edittext"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch" />
+
+                <android.widget.Button
+                    android:id="@+id/btn_buscar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:layout_marginStart="10dp"
+                    android:text="BUSCAR"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"
+                    android:paddingHorizontal="18dp"
+                    android:background="@drawable/bg_button_gradient" />
+            </LinearLayout>
+
+            <!-- Tarjeta de Sugerencias Flotante (Anclada debajo del buscador) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_sugerencias_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_buscador"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="-6dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#1E1E1E"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="10dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_sugerencias"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"/>
+
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
 
         <!-- Barra de Pestañas (Nube | Favoritas | Descargadas) -->
         <LinearLayout

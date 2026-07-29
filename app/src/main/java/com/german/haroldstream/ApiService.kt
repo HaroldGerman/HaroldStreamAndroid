@@ -27,7 +27,15 @@ interface ApiService {
     @Headers("ngrok-skip-browser-warning: any_value")
     @GET("api/version")
     suspend fun obtenerVersion(): VersionResponse
+
+    @Headers("ngrok-skip-browser-warning: any_value")
+    @GET("api/suggest")
+    suspend fun obtenerSugerencias(@Query("q") query: String): SuggestResponse
 }
+
+// Añade este data class al final de tu archivo ApiService.kt
+data class SuggestResponse(val suggestions: List<String>?)
+
 
 data class ResponseData(
     val status: String?,
