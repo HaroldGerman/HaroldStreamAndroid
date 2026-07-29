@@ -396,23 +396,17 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                 file
             )
 
+            // Creamos el intent general sin forzar ninguna app específica
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "video/mp4"
                 putExtra(Intent.EXTRA_STREAM, contentUri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                setPackage("com.whatsapp")
             }
 
-            try {
-                startActivity(shareIntent)
-            } catch (e: Exception) {
-                val generalIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "video/mp4"
-                    putExtra(Intent.EXTRA_STREAM, contentUri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                startActivity(Intent.createChooser(generalIntent, "Compartir clip con"))
-            }
+            // Invocamos el menú de "Compartir" universal de Android
+            val chooser = Intent.createChooser(shareIntent, "Compartir fragmento en...")
+            startActivity(chooser)
+
         } catch (e: Exception) {
             Toast.makeText(this, "Error al compartir archivo: ${e.message}", Toast.LENGTH_SHORT).show()
         }
