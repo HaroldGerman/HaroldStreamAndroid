@@ -295,33 +295,51 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         layoutTimes.addView(etEnd)
         layout.addView(layoutTimes)
 
+        // --- BOTÓN DE ENLACE DIRECTO ---
+        val btnEnlace = Button(context).apply {
+            text = "🔗 Compartir Enlace (Audio Completo)"
+            setBackgroundColor(android.graphics.Color.parseColor("#8e44ad"))
+            setTextColor(android.graphics.Color.WHITE)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, 40, 0, 20) }
+        }
+        layout.addView(btnEnlace)
+
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("✂️ Recortar y Compartir Fragmento")
+        builder.setTitle("Compartir en HaroldStream")
         builder.setView(layout)
 
-        builder.setPositiveButton("🎵 Estado (Portada + Audio)") { _, _ ->
+        builder.setPositiveButton("🎵 Estado (Audio)") { _, _ ->
             val start = etStart.text.toString().toIntOrNull() ?: 0
             val end = etEnd.text.toString().toIntOrNull() ?: 15
-            if (start >= 0 && end > start) {
-                descargarYCompartirClip(cancion, start, end, isAudioOnly = true)
-            } else {
-                Toast.makeText(context, "Rango de tiempo inválido", Toast.LENGTH_SHORT).show()
-            }
+            if (start >= 0 && end > start) descargarYCompartirClip(cancion, start, end, true)
         }
 
-        builder.setNeutralButton("🎥 Clip de Video") { _, _ ->
+        builder.setNeutralButton("🎥 Clip (Video)") { _, _ ->
             val start = etStart.text.toString().toIntOrNull() ?: 0
             val end = etEnd.text.toString().toIntOrNull() ?: 15
-            if (start >= 0 && end > start) {
-                descargarYCompartirClip(cancion, start, end, isAudioOnly = false)
-            } else {
-                Toast.makeText(context, "Rango de tiempo inválido", Toast.LENGTH_SHORT).show()
-            }
+            if (start >= 0 && end > start) descargarYCompartirClip(cancion, start, end, false)
         }
 
         builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
 
         val alert = builder.create()
+
+        // ACCIÓN DEL BOTÓN MORADO
+        btnEnlace.setOnClickListener {
+            alert.dismiss()
+            val baseUrl = if (MainActivity.DEFAULT_URL.endsWith("/")) MainActivity.DEFAULT_URL else "${MainActivity.DEFAULT_URL}/"
+            val shareUrl = "${baseUrl}compartir?title=${Uri.encode(cancion.titulo ?: "")}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&canal=${Uri.encode(cancion.canal ?: "")}&url=${Uri.encode(cancion.url ?: "")}"
+
+            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "🎵 Escucha *${cancion.titulo}* gratis en HaroldStream:\n\n$shareUrl")
+            }
+            startActivity(Intent.createChooser(sendIntent, "Compartir enlace en..."))
+        }
+
         alert.show()
     }
 

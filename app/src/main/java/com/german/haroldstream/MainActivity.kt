@@ -379,6 +379,26 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
         cargarHistorialYRecomendaciones()
         comprobarActualizaciones()
+
+        // --- DETECTAR ENLACE COMPARTIDO (DEEP LINKING) ---
+        val uri: Uri? = intent.data
+        if (uri != null && uri.getQueryParameter("play_url") != null) {
+            val playUrl = uri.getQueryParameter("play_url") ?: ""
+            val title = uri.getQueryParameter("title") ?: "Canción Compartida"
+            val canal = uri.getQueryParameter("canal") ?: "HaroldStream"
+            val thumb = uri.getQueryParameter("thumb") ?: ""
+
+            val cancionCompartida = Cancion(
+                titulo = title,
+                url = playUrl,
+                canal = canal,
+                thumbnail = thumb
+            )
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                reproducirCancionSeleccionada(cancionCompartida)
+            }, 1000)
+        }
     }
 
     private fun comprobarEstadoAutorizacion() {
