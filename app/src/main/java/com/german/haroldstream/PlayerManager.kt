@@ -11,7 +11,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 
-object PlayerManager {
+object  PlayerManager {
 
     var player: ExoPlayer? = null
         private set
@@ -49,6 +49,7 @@ object PlayerManager {
         listeners.remove(listener)
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun getOrCreatePlayer(context: Context): ExoPlayer {
         if (player == null) {
             val appContext = context.applicationContext
@@ -64,8 +65,13 @@ object PlayerManager {
                     .setUserAgent(userAgent)
                     .setAllowCrossProtocolRedirects(true)
 
+                // --- NUEVO: Envolvemos el lector HTTP en un lector Universal ---
+                // Esto permite leer de Internet Y de la memoria del teléfono
+                val defaultDataSourceFactory = androidx.media3.datasource.DefaultDataSource.Factory(appContext, httpDataSourceFactory)
+
                 val mediaSourceFactory = DefaultMediaSourceFactory(appContext)
-                    .setDataSourceFactory(httpDataSourceFactory)
+                    .setDataSourceFactory(defaultDataSourceFactory)
+                // ---------------------------------------------------------------
 
                 val newPlayer = ExoPlayer.Builder(appContext)
                     .setMediaSourceFactory(mediaSourceFactory)
@@ -113,10 +119,18 @@ object PlayerManager {
                 .setArtworkUri(if (!cancion.thumbnail.isNullOrEmpty()) Uri.parse(cancion.thumbnail) else null)
                 .build()
 
+            // --- NUEVO: LÓGICA DE DETECCIÓN SUPER BLINDADA ---
+            val uriAEscuchar: Uri = when {
+                streamUrl.startsWith("http") -> Uri.parse(streamUrl) // Streaming online
+                streamUrl.startsWith("content://") || streamUrl.startsWith("file://") -> Uri.parse(streamUrl) // Formato nativo Android
+                else -> Uri.fromFile(java.io.File(streamUrl)) // Ruta de texto crudo
+            }
+
             val mediaItem = MediaItem.Builder()
-                .setUri(streamUrl)
+                .setUri(uriAEscuchar) // Usamos la URI ya formateada correctamente
                 .setMediaMetadata(mediaMetadata)
                 .build()
+            // --------------------------------------------------
 
             p.setMediaItem(mediaItem)
             p.prepare()
