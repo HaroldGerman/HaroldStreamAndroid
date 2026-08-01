@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.HaroldSound" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/violet_primary</item>
+        <item name="colorPrimaryDark">@color/violet_primary</item>
+        <item name="colorAccent">@color/violet_primary</item>
+        <item name="android:windowBackground">@color/bg_claro</item>
+        
+        <!-- Atributos personalizados para Tema Claro -->
+        <item name="backgroundColor">@color/bg_claro</item>
+        <item name="cardColor">@color/card_claro</item>
+        <item name="textMainColor">@color/text_main_claro</item>
+        <item name="textSecColor">@color/text_sec_claro</item>
+        <item name="borderColor">@color/border_claro</item>
+        <item name="circleBtnBg">@color/circle_btn_bg</item>
+    </style>
 
-    <style name="Theme.HaroldSound" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Estilo Bottom Sheet Oscuro para el diálogo de Compartir -->
+    <style name="DarkBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="bottomSheetStyle">@style/DarkBottomSheet</item>
+    </style>
+
+    <style name="DarkBottomSheet" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>

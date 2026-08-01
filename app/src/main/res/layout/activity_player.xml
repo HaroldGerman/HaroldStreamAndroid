@@ -4,123 +4,136 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F2F2F7"
-    android:paddingHorizontal="20dp"
-    android:paddingTop="36dp"
-    android:paddingBottom="20dp"
+    android:background="?attr/backgroundColor"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="32dp"
+    android:paddingBottom="24dp"
     android:gravity="center_horizontal">
 
-    <!-- Header superior con botón colapsar (V) y Botón Descargar (Top Right) -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="24dp">
 
         <ImageButton
             android:id="@+id/btn_collapse"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_chevron_down"
-            app:tint="#31124a"
-            android:contentDescription="Colapsar a mini reproductor" />
+            app:tint="?attr/textMainColor"
+            android:contentDescription="Colapsar" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="REPRODUCIENDO"
-            android:textColor="#000000"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:layout_centerInParent="true"
+            android:text="Reproduciendo"
+            android:textColor="?attr/textMainColor"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/btn_download_mobile"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_download_thin"
-            app:tint="#31124a"
-            android:contentDescription="Descargar MP3" />
-    </LinearLayout>
+    </RelativeLayout>
 
-    <!-- Portada del Álbum con CardView y Sombra Elevada -->
+    <!-- Portada del Álbum Gigante Redondeada -->
     <androidx.cardview.widget.CardView
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="12dp"
-        android:backgroundTint="#242424"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="24dp">
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="10dp"
+        android:backgroundTint="?attr/cardColor"
+        android:layout_marginBottom="28dp">
 
         <ImageView
             android:id="@+id/iv_player_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="Portada" />
+            android:contentDescription="Portada de Reproductor" />
     </androidx.cardview.widget.CardView>
 
-    <!-- Título de la canción -->
-    <TextView
-        android:id="@+id/tv_player_title"
+    <!-- Fila de Detalles y Botón de Corazón/Favorito -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Título de la Canción"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:layout_marginBottom="4dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
 
-    <!-- Artista / Canal -->
-    <TextView
-        android:id="@+id/tv_player_artist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Canal / Artista"
-        android:textColor="#666666"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_marginBottom="20dp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    <!-- Barra de Tiempo (SeekBar) -->
+            <TextView
+                android:id="@+id/tv_player_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Título de la Canción"
+                android:textColor="?attr/textMainColor"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/tv_player_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Artista / Canal"
+                android:textColor="?attr/textSecColor"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_player_star"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_heart_outline"
+            app:tint="@color/violet_primary"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
+            android:contentDescription="Favorito" />
+    </LinearLayout>
+
+    <!-- Barra de Progreso (SeekBar) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="24dp">
 
         <SeekBar
             android:id="@+id/sb_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:progressBackgroundTint="#D1D1D6"
-            android:progressTint="#31124a"
-            android:thumbTint="#31124a" />
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:progressBackgroundTint="?attr/borderColor"
+            android:progressTint="@color/violet_primary"
+            android:thumbTint="@color/violet_primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="14dp"
+            android:paddingHorizontal="6dp"
             android:layout_marginTop="4dp">
 
             <TextView
                 android:id="@+id/tv_current_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00"
-                android:textColor="#666666"
-                android:textSize="12sp" />
+                android:text="0:00"
+                android:textColor="?attr/textSecColor"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="0dp"
@@ -131,95 +144,164 @@
                 android:id="@+id/tv_total_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00"
-                android:textColor="#666666"
-                android:textSize="12sp" />
+                android:text="0:00"
+                android:textColor="?attr/textSecColor"
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Controles Principales: Canción Anterior ⏮️ | Play/Pausa ⏯️ | Canción Siguiente ⏭️ -->
+    <!-- Fila de Controles de Reproducción -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="24dp">
+        android:gravity="center_vertical"
+        android:layout_marginBottom="32dp">
 
+        <!-- Shuffle (Aleatorio) -->
+        <ImageButton
+            android:id="@+id/btn_shuffle"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_shuffle"
+            app:tint="?attr/textSecColor"
+            android:contentDescription="Aleatorio" />
+
+        <!-- Anterior -->
         <ImageButton
             android:id="@+id/btn_rewind"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_rewind_solid"
-            app:tint="#31124a"
-            android:contentDescription="Canción Anterior" />
+            app:tint="?attr/textMainColor"
+            android:contentDescription="Anterior" />
 
+        <!-- Play/Pause Violeta Gigante -->
         <ImageButton
             android:id="@+id/btn_play_pause"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginHorizontal="28dp"
-            android:background="@drawable/bg_button_gradient"
-            android:src="@android:drawable/ic_media_pause"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_pill_active"
+            android:src="@android:drawable/ic_media_play"
             app:tint="#FFFFFF"
-            android:contentDescription="Play o Pausa" />
+            android:elevation="6dp"
+            android:contentDescription="Play/Pause" />
 
+        <!-- Siguiente -->
         <ImageButton
             android:id="@+id/btn_forward"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_forward_solid"
-            app:tint="#31124a"
-            android:contentDescription="Canción Siguiente" />
+            app:tint="?attr/textMainColor"
+            android:contentDescription="Siguiente" />
+
+        <!-- Repetir -->
+        <ImageButton
+            android:id="@+id/btn_repeat"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_repeat"
+            app:tint="?attr/textSecColor"
+            android:contentDescription="Repetir" />
     </LinearLayout>
 
-    <!-- Botones extras: Compartir y Favoritos (Estilo Web) -->
+    <!-- Botones de Acción Verticales del Reproductor -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingHorizontal="24dp"
-        android:layout_marginBottom="24dp">
+        android:paddingVertical="12dp"
+        android:background="@android:color/transparent">
 
-        <ImageButton
-            android:id="@+id/btn_share"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_share_thin"
-            app:tint="#31124a"
-            android:contentDescription="Compartir canción" />
-
-        <View
+        <!-- Descargar -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/btn_download_mobile"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_download_thin"
+                app:tint="?attr/textMainColor"
+                android:scaleType="fitCenter"
+                android:contentDescription="Descargar" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descargar"
+                android:textColor="?attr/textSecColor"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btn_player_star"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_heart_outline"
-            app:tint="#a855f7"
-            android:contentDescription="Agregar a Favoritos" />
+        <!-- Agregar -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/btn_add_playlist"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_spotify_plus"
+                app:tint="?attr/textMainColor"
+                android:scaleType="fitCenter"
+                android:padding="3dp"
+                android:contentDescription="Agregar" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Agregar"
+                android:textColor="?attr/textSecColor"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Compartir -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/btn_share"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_share_thin"
+                app:tint="?attr/textMainColor"
+                android:scaleType="fitCenter"
+                android:contentDescription="Compartir" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Compartir"
+                android:textColor="?attr/textSecColor"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- Branding Footer (Marca de Agua) -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="HaroldSound"
-        android:textColor="#555555"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.2"
-        android:layout_marginBottom="4dp" />
 
 </LinearLayout>

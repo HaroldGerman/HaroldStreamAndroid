@@ -4,24 +4,23 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.exoplayer.ExoPlayer
 import coil.load
 import android.content.Intent
-import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 
 class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
@@ -32,8 +31,12 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnPlayerStar: ImageButton
     private lateinit var btnDownloadMobile: ImageButton
+    private lateinit var btnShuffle: ImageButton
+    private lateinit var btnRepeat: ImageButton
 
     private var currentCancionLocal: Cancion? = null
+    private var isShuffleOn = false
+    private var isRepeatOn = false
 
     private val handler = Handler(Looper.getMainLooper())
     private var isUserSeeking = false
@@ -59,10 +62,12 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         tvTotalTime = findViewById(R.id.tv_total_time)
         btnPlayPause = findViewById(R.id.btn_play_pause)
         btnPlayerStar = findViewById(R.id.btn_player_star)
+        btnShuffle = findViewById(R.id.btn_shuffle)
+        btnRepeat = findViewById(R.id.btn_repeat)
 
         val btnRewind = findViewById<ImageButton>(R.id.btn_rewind)
         val btnForward = findViewById<ImageButton>(R.id.btn_forward)
-        btnDownloadMobile = findViewById<ImageButton>(R.id.btn_download_mobile)
+        btnDownloadMobile = findViewById(R.id.btn_download_mobile)
 
         val streamUrl = intent.getStringExtra(EXTRA_STREAM_URL)
         val title = intent.getStringExtra(EXTRA_TITLE) ?: "HaroldSound Audio"
@@ -103,11 +108,54 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             finish()
         }
 
+        // ---- SHUFFLE ----
+        btnShuffle.setOnClickListener {
+            isShuffleOn = !isShuffleOn
+            PlayerManager.isShuffleOn = isShuffleOn
+            if (isShuffleOn) {
+                btnShuffle.setColorFilter(android.graphics.Color.parseColor("#7356F1"))
+                Toast.makeText(this, "🔀 Aleatorio activado", Toast.LENGTH_SHORT).show()
+            } else {
+                btnShuffle.clearColorFilter()
+                btnShuffle.setColorFilter(android.graphics.Color.parseColor("#788295"))
+                Toast.makeText(this, "Aleatorio desactivado", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // ---- REPEAT ----
+        btnRepeat.setOnClickListener {
+            isRepeatOn = !isRepeatOn
+            PlayerManager.isRepeatOn = isRepeatOn
+            if (isRepeatOn) {
+                btnRepeat.setColorFilter(android.graphics.Color.parseColor("#7356F1"))
+                PlayerManager.player?.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ONE
+                Toast.makeText(this, "🔁 Repetir canción activado", Toast.LENGTH_SHORT).show()
+            } else {
+                btnRepeat.clearColorFilter()
+                btnRepeat.setColorFilter(android.graphics.Color.parseColor("#788295"))
+                PlayerManager.player?.repeatMode = androidx.media3.common.Player.REPEAT_MODE_OFF
+                Toast.makeText(this, "Repetir desactivado", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Sincronizar estado guardado de shuffle/repeat
+        isShuffleOn = PlayerManager.isShuffleOn
+        isRepeatOn = PlayerManager.isRepeatOn
+        if (isShuffleOn) btnShuffle.setColorFilter(android.graphics.Color.parseColor("#7356F1"))
+        else btnShuffle.setColorFilter(android.graphics.Color.parseColor("#788295"))
+        if (isRepeatOn) btnRepeat.setColorFilter(android.graphics.Color.parseColor("#7356F1"))
+        else btnRepeat.setColorFilter(android.graphics.Color.parseColor("#788295"))
+
         val btnShare = findViewById<ImageButton>(R.id.btn_share)
         btnShare?.setOnClickListener {
             currentCancionLocal?.let { cancion ->
-                mostrarDialogoCompartir(cancion)
+                mostrarBottomSheetCompartir(cancion)
             }
+        }
+
+        val btnAddPlaylist = findViewById<ImageButton>(R.id.btn_add_playlist)
+        btnAddPlaylist?.setOnClickListener {
+            btnPlayerStar.performClick()
         }
 
         val p = PlayerManager.getOrCreatePlayer(this)
@@ -146,7 +194,13 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
 
         btnForward.setOnClickListener {
-            PlayerManager.siguienteCancion(this)
+            if (isRepeatOn) {
+                // Si está en modo repeat, reiniciar canción actual
+                PlayerManager.seekTo(0L)
+                PlayerManager.player?.play()
+            } else {
+                PlayerManager.siguienteCancion(this)
+            }
         }
 
         btnDownloadMobile.setOnClickListener {
@@ -255,84 +309,92 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         return String.format("%02d:%02d", minutes, seconds)
     }
 
-    private fun mostrarDialogoCompartir(cancion: Cancion) {
+    // =====================================================================
+    // NUEVO BOTTOM SHEET DE COMPARTIR - estilo premium como la foto
+    // =====================================================================
+    private fun mostrarBottomSheetCompartir(cancion: Cancion) {
         val p = PlayerManager.player
+        val durationMs = p?.duration ?: 0L
+        val durationSec = if (durationMs > 0) (durationMs / 1000).toInt() else 240 // 4 mins default
         val currentSec = if (p != null) (p.currentPosition / 1000).toInt() else 0
-        val defaultEnd = currentSec + 15
 
-        val context = this
-        val layout = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(50, 40, 50, 20)
+        // Límites ultra seguros
+        val safeCurrentSec = currentSec.coerceIn(0, durationSec)
+        val defaultEnd = (safeCurrentSec + 15).coerceAtMost(durationSec)
+
+        val bottomSheet = BottomSheetDialog(this, R.style.DarkBottomSheetDialog)
+        val view = layoutInflater.inflate(R.layout.dialog_share_bottom, null)
+        bottomSheet.setContentView(view)
+        bottomSheet.window?.apply {
+            setBackgroundDrawableResource(android.R.color.transparent)
         }
 
-        val tvInfo = TextView(context).apply {
-            text = "Selecciona el fragmento a recortar (en segundos):"
-            textSize = 14f
-            setPadding(0, 0, 0, 20)
-        }
-        layout.addView(tvInfo)
+        val etStart = view.findViewById<EditText>(R.id.et_share_start)
+        val etEnd = view.findViewById<EditText>(R.id.et_share_end)
+        val tvDuracion = view.findViewById<TextView>(R.id.tv_share_duracion)
+        val rangeSlider = view.findViewById<com.google.android.material.slider.RangeSlider>(R.id.rs_share_range)
 
-        val layoutTimes = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
+        etStart.setText(formatTimeShort(safeCurrentSec))
+        etEnd.setText(formatTimeShort(defaultEnd))
+        tvDuracion.text = "Duración: ${formatTimeShort(defaultEnd - safeCurrentSec)}"
 
-        val etStart = EditText(context).apply {
-            hint = "Inicio (seg)"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setText(currentSec.toString())
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-
-        val etEnd = EditText(context).apply {
-            hint = "Fin (seg)"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setText(defaultEnd.toString())
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        // Configurar RangeSlider con el rango completo de la canción
+        if (rangeSlider != null) {
+            rangeSlider.valueFrom = 0.0f
+            val maxVal = durationSec.toFloat().coerceAtLeast(1.0f)
+            rangeSlider.valueTo = maxVal
+            
+            val val1 = safeCurrentSec.toFloat().coerceIn(0.0f, maxVal)
+            val val2 = defaultEnd.toFloat().coerceIn(val1, maxVal)
+            rangeSlider.values = listOf(val1, val2)
         }
 
-        layoutTimes.addView(etStart)
-        layoutTimes.addView(etEnd)
-        layout.addView(layoutTimes)
-
-        // --- BOTÓN DE ENLACE DIRECTO ---
-        val btnEnlace = Button(context).apply {
-            text = "🔗 Compartir Enlace (Audio Completo)"
-            setBackgroundColor(android.graphics.Color.parseColor("#8e44ad"))
-            setTextColor(android.graphics.Color.WHITE)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, 40, 0, 20) }
+        // Actualizar duración al cambiar los campos de texto y actualizar RangeSlider
+        val watcher = object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val st = parseTimeInput(etStart.text.toString())
+                val en = parseTimeInput(etEnd.text.toString())
+                if (en > st) {
+                    tvDuracion.text = "Duración: ${formatTimeShort(en - st)}"
+                    if (rangeSlider != null) {
+                        val safeSt = st.toFloat().coerceIn(rangeSlider.valueFrom, rangeSlider.valueTo)
+                        val safeEn = en.toFloat().coerceIn(rangeSlider.valueFrom, rangeSlider.valueTo)
+                        if (safeEn > safeSt) {
+                            rangeSlider.values = listOf(safeSt, safeEn)
+                        }
+                    }
+                }
+            }
         }
-        layout.addView(btnEnlace)
+        etStart.addTextChangedListener(watcher)
+        etEnd.addTextChangedListener(watcher)
 
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Compartir en HaroldStream")
-        builder.setView(layout)
+        // Evento al deslizar cualquiera de los dos puntos del RangeSlider
+        rangeSlider?.addOnChangeListener { slider, _, fromUser ->
+            if (fromUser) {
+                val values = slider.values
+                val startVal = values[0].toInt()
+                val endVal = values[1].toInt()
 
-        builder.setPositiveButton("🎵 Estado (Audio)") { _, _ ->
-            val start = etStart.text.toString().toIntOrNull() ?: 0
-            val end = etEnd.text.toString().toIntOrNull() ?: 15
-            if (start >= 0 && end > start) descargarYCompartirClip(cancion, start, end, true)
+                etStart.removeTextChangedListener(watcher)
+                etEnd.removeTextChangedListener(watcher)
+
+                etStart.setText(formatTimeShort(startVal))
+                etEnd.setText(formatTimeShort(endVal))
+                tvDuracion.text = "Duración: ${formatTimeShort(endVal - startVal)}"
+
+                etStart.addTextChangedListener(watcher)
+                etEnd.addTextChangedListener(watcher)
+            }
         }
 
-        builder.setNeutralButton("🎥 Clip (Video)") { _, _ ->
-            val start = etStart.text.toString().toIntOrNull() ?: 0
-            val end = etEnd.text.toString().toIntOrNull() ?: 15
-            if (start >= 0 && end > start) descargarYCompartirClip(cancion, start, end, false)
-        }
-
-        builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
-
-        val alert = builder.create()
-
-        // ACCIÓN DEL BOTÓN MORADO
-        btnEnlace.setOnClickListener {
-            alert.dismiss()
+        // Botón Compartir Enlace
+        view.findViewById<LinearLayout>(R.id.btn_share_enlace).setOnClickListener {
+            bottomSheet.dismiss()
             val baseUrl = if (MainActivity.DEFAULT_URL.endsWith("/")) MainActivity.DEFAULT_URL else "${MainActivity.DEFAULT_URL}/"
             val shareUrl = "${baseUrl}compartir?title=${Uri.encode(cancion.titulo ?: "")}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&canal=${Uri.encode(cancion.canal ?: "")}&url=${Uri.encode(cancion.url ?: "")}"
-
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, "🎵 Escucha *${cancion.titulo}* gratis en HaroldStream:\n\n$shareUrl")
@@ -340,7 +402,48 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             startActivity(Intent.createChooser(sendIntent, "Compartir enlace en..."))
         }
 
-        alert.show()
+        // Botón Estado Audio
+        view.findViewById<LinearLayout>(R.id.btn_share_estado).setOnClickListener {
+            bottomSheet.dismiss()
+            val start = parseTimeInput(etStart.text.toString())
+            val end = parseTimeInput(etEnd.text.toString())
+            if (start >= 0 && end > start) descargarYCompartirClip(cancion, start, end, true)
+            else Toast.makeText(this, "Tiempo inválido", Toast.LENGTH_SHORT).show()
+        }
+
+        // Botón Clip Video
+        view.findViewById<LinearLayout>(R.id.btn_share_clip).setOnClickListener {
+            bottomSheet.dismiss()
+            val start = parseTimeInput(etStart.text.toString())
+            val end = parseTimeInput(etEnd.text.toString())
+            if (start >= 0 && end > start) descargarYCompartirClip(cancion, start, end, false)
+            else Toast.makeText(this, "Tiempo inválido", Toast.LENGTH_SHORT).show()
+        }
+
+        // Botón Cancelar
+        view.findViewById<LinearLayout>(R.id.btn_share_cancelar).setOnClickListener {
+            bottomSheet.dismiss()
+        }
+
+        bottomSheet.show()
+    }
+
+    private fun formatTimeShort(seconds: Int): String {
+        val m = seconds / 60
+        val s = seconds % 60
+        return String.format("%02d:%02d", m, s)
+    }
+
+    private fun parseTimeInput(text: String): Int {
+        // Acepta tanto "75" (segundos) como "01:15" (mm:ss)
+        return if (text.contains(":")) {
+            val parts = text.split(":")
+            val m = parts[0].toIntOrNull() ?: 0
+            val s = parts[1].toIntOrNull() ?: 0
+            m * 60 + s
+        } else {
+            text.toIntOrNull() ?: 0
+        }
     }
 
     private fun descargarYCompartirClip(cancion: Cancion, start: Int, end: Int, isAudioOnly: Boolean) {
@@ -414,14 +517,12 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                 file
             )
 
-            // Creamos el intent general sin forzar ninguna app específica
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "video/mp4"
                 putExtra(Intent.EXTRA_STREAM, contentUri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            // Invocamos el menú de "Compartir" universal de Android
             val chooser = Intent.createChooser(shareIntent, "Compartir fragmento en...")
             startActivity(chooser)
 

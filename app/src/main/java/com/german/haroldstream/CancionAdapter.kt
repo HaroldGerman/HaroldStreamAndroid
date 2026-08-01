@@ -67,22 +67,34 @@ class CancionAdapter(
         }
 
         val esFav = LocalMusicManager.esFavorito(context, cancion)
-        if (esFav) {
-            holder.btnFavorito.setImageResource(R.drawable.ic_spotify_check)
-            holder.btnFavorito.clearColorFilter()
+        val typedValue = android.util.TypedValue()
+        val tintColor = if (esFav) {
+            androidx.core.content.ContextCompat.getColor(context, R.color.violet_primary)
         } else {
-            holder.btnFavorito.setImageResource(R.drawable.ic_spotify_plus)
-            holder.btnFavorito.clearColorFilter()
+            context.theme.resolveAttribute(R.attr.textMainColor, typedValue, true)
+            if (typedValue.resourceId != 0) {
+                androidx.core.content.ContextCompat.getColor(context, typedValue.resourceId)
+            } else {
+                typedValue.data
+            }
         }
+        holder.btnFavorito.setImageResource(if (esFav) R.drawable.ic_spotify_check else R.drawable.ic_spotify_plus)
+        holder.btnFavorito.setColorFilter(tintColor)
 
         holder.btnFavorito.setOnClickListener {
             val nuevoEstado = !LocalMusicManager.esFavorito(context, cancion)
-            if (nuevoEstado) {
-                holder.btnFavorito.setImageResource(R.drawable.ic_spotify_check)
+            holder.btnFavorito.setImageResource(if (nuevoEstado) R.drawable.ic_spotify_check else R.drawable.ic_spotify_plus)
+            val newTint = if (nuevoEstado) {
+                androidx.core.content.ContextCompat.getColor(context, R.color.violet_primary)
             } else {
-                holder.btnFavorito.setImageResource(R.drawable.ic_spotify_plus)
+                context.theme.resolveAttribute(R.attr.textMainColor, typedValue, true)
+                if (typedValue.resourceId != 0) {
+                    androidx.core.content.ContextCompat.getColor(context, typedValue.resourceId)
+                } else {
+                    typedValue.data
+                }
             }
-            holder.btnFavorito.clearColorFilter()
+            holder.btnFavorito.setColorFilter(newTint)
             onFavoriteToggle?.invoke(cancion, nuevoEstado)
         }
 

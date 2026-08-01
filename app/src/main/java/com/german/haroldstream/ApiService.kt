@@ -31,6 +31,14 @@ interface ApiService {
     @Headers("ngrok-skip-browser-warning: any_value")
     @GET("api/suggest")
     suspend fun obtenerSugerencias(@Query("q") query: String): SuggestResponse
+
+    @Headers("ngrok-skip-browser-warning: any_value")
+    @GET("api/buscar-playlists")
+    suspend fun buscarPlaylists(@Query("termino") termino: String): PlaylistSearchResponse
+
+    @Headers("ngrok-skip-browser-warning: any_value")
+    @GET("api/playlist-songs")
+    suspend fun obtenerCancionesPlaylist(@Query("url") url: String): SearchResponse
 }
 
 // Añade este data class al final de tu archivo ApiService.kt
@@ -70,4 +78,15 @@ data class VersionResponse(
     val versionName: String,
     val releaseNotes: String,
     val minVersionCode: Int
+)
+
+data class PlaylistSearchResponse(val playlists: List<Playlist>)
+
+data class Playlist(
+    val id: String? = null,
+    val titulo: String? = null,
+    val url: String? = null,
+    val thumbnail: String? = null,
+    val video_count: Int = 0,
+    val canal: String? = null
 )

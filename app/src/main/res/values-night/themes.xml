@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HaroldSound" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/violet_primary</item>
+        <item name="colorPrimaryDark">@color/violet_primary</item>
+        <item name="colorAccent">@color/violet_primary</item>
+        <item name="android:windowBackground">@color/bg_oscuro</item>
+        
+        <!-- Atributos personalizados para Tema Oscuro -->
+        <item name="backgroundColor">@color/bg_oscuro</item>
+        <item name="cardColor">@color/card_oscuro</item>
+        <item name="textMainColor">@color/text_main_oscuro</item>
+        <item name="textSecColor">@color/text_sec_oscuro</item>
+        <item name="borderColor">@color/border_oscuro</item>
+        <item name="circleBtnBg">#28283C</item>
+    </style>
+</resources>

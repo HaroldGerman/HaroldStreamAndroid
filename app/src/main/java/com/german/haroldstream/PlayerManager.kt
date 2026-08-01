@@ -31,6 +31,10 @@ object  PlayerManager {
     var onAutoPlayNextListener: ((Cancion) -> Unit)? = null
     var onAutoPlayRelatedListener: ((Cancion?) -> Unit)? = null
 
+    // Estado de Shuffle y Repeat
+    var isShuffleOn: Boolean = false
+    var isRepeatOn: Boolean = false
+
     private val listeners = mutableListOf<PlayerStateListener>()
 
     interface PlayerStateListener {
@@ -147,16 +151,20 @@ object  PlayerManager {
             onAutoPlayRelatedListener?.invoke(currentCancion)
             return
         }
-        val nuevoIndice = (indiceActual + 1) % listaReproduccion.size
-        
-        // Si acabamos de dar la vuelta completa (estamos en el índice 0 otra vez) y no es el único,
-        // podríamos buscar relacionados, pero por ahora solo seguimos la lista circularmente.
-        // O si preferimos, que busque si llega al final. 
-        if (nuevoIndice == 0 && listaReproduccion.size > 1) {
+
+        val nuevoIndice = if (isShuffleOn) {
+            // Modo aleatorio: elegir una canción al azar diferente a la actual
+            val indices = listaReproduccion.indices.filter { it != indiceActual }
+            if (indices.isEmpty()) 0 else indices.random()
+        } else {
+            (indiceActual + 1) % listaReproduccion.size
+        }
+
+        if (!isShuffleOn && nuevoIndice == 0 && listaReproduccion.size > 1) {
             onAutoPlayRelatedListener?.invoke(currentCancion)
             return
         }
-        
+
         indiceActual = nuevoIndice
         val siguiente = listaReproduccion[nuevoIndice]
         onAutoPlayNextListener?.invoke(siguiente)

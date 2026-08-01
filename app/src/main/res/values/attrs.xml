@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="backgroundColor" format="color" />
+    <attr name="cardColor" format="color" />
+    <attr name="textMainColor" format="color" />
+    <attr name="textSecColor" format="color" />
+    <attr name="borderColor" format="color" />
+    <attr name="circleBtnBg" format="color" />
+</resources>

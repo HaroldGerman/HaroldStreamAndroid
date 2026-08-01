@@ -43,6 +43,11 @@ object UserAuthManager {
         return prefs.getBoolean(KEY_IS_APPROVED, false)
     }
 
+    fun obtenerNombreUsuario(context: Context): String {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_USER_NAME, "Usuario") ?: "Usuario"
+    }
+
     fun guardarDatosUsuarioLocal(context: Context, nombre: String, telefono: String, aprobado: Boolean) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit()

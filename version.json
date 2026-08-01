@@ -1,6 +1,6 @@
 {
-    "versionCode": 5,
-    "versionName": "5.0",
+    "versionCode": 16,
+    "versionName": "16.0",
     "releaseNotes": "Añadida función de compartir fragmentos de video y audio a WhatsApp.",
     "minVersionCode": 1
 }

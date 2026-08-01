@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2F2F7">
+    android:background="?attr/backgroundColor">
 
     <!-- Contenido Principal de la Aplicación -->
     <LinearLayout
@@ -11,52 +11,142 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_above="@+id/layout_mini_player">
+        android:layout_above="@+id/layout_mini_player"
+        android:paddingBottom="4dp">
 
-        <!-- Contenedor Principal Relativo para permitir que la lista flote -->
+        <!-- Cabecera Principal Premium (Buscar música) -->
+        <LinearLayout
+            android:id="@+id/layout_main_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Buscar música"
+                    android:textColor="?attr/textMainColor"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Encuentra tus canciones favoritas"
+                    android:textColor="?attr/textSecColor"
+                    android:textSize="13sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btn_theme_toggle"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_pill_inactive"
+                android:src="@drawable/ic_theme_dark"
+                app:tint="@color/violet_primary"
+                android:contentDescription="Cambiar tema" />
+
+            <ImageButton
+                android:id="@+id/btn_header_config"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_pill_inactive"
+                android:src="@drawable/ic_music_note"
+                app:tint="@color/violet_primary"
+                android:contentDescription="Configuración" />
+        </LinearLayout>
+
+        <!-- Buscador superior -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="false"
-            android:clipToPadding="false">
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="12dp">
 
-            <!-- Header con Buscador (Tu diseño original intacto) -->
             <LinearLayout
                 android:id="@+id/layout_buscador"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingHorizontal="14dp"
-                android:paddingTop="36dp"
-                android:paddingBottom="10dp"
-                android:gravity="center_vertical"
-                android:background="#F2F2F7">
+                android:gravity="center_vertical">
 
-                <EditText
-                    android:id="@+id/et_busqueda"
+                <!-- Campo de búsqueda en tarjeta redondeada -->
+                <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
-                    android:layout_height="46dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:hint="🔍 ¿Qué quieres escuchar?"
-                    android:textColorHint="#666666"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:paddingHorizontal="16dp"
-                    android:background="@drawable/bg_edittext"
-                    android:inputType="text"
-                    android:imeOptions="actionSearch" />
+                    app:cardCornerRadius="24dp"
+                    app:cardBackgroundColor="?attr/cardColor"
+                    app:cardElevation="3dp"
+                    app:cardMaxElevation="4dp">
 
-                <android.widget.Button
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_search"
+                            app:tint="?attr/textSecColor"
+                            android:contentDescription="Lupa" />
+
+                        <EditText
+                            android:id="@+id/et_busqueda"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:hint="Buscar canción o artista..."
+                            android:textColorHint="?attr/textSecColor"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="14sp"
+                            android:paddingHorizontal="10dp"
+                            android:background="@null"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:imeOptions="actionSearch" />
+
+                        <ImageButton
+                            android:id="@+id/btn_clear_search"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="?android:attr/selectableItemBackgroundBorderless"
+                            android:src="@android:drawable/ic_menu_close_clear_cancel"
+                            app:tint="?attr/textSecColor"
+                            android:contentDescription="Limpiar"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Botón Buscar Violeta -->
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_buscar"
                     android:layout_width="wrap_content"
-                    android:layout_height="46dp"
+                    android:layout_height="48dp"
                     android:layout_marginStart="10dp"
-                    android:text="BUSCAR"
-                    android:textSize="13sp"
+                    android:text="Buscar"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#000000"
-                    android:paddingHorizontal="18dp"
-                    android:background="@drawable/bg_button_gradient" />
+                    android:textColor="#FFFFFF"
+                    android:paddingHorizontal="22dp"
+                    android:background="@drawable/bg_pill_active" />
             </LinearLayout>
 
             <!-- Tarjeta de Sugerencias Flotante (Anclada debajo del buscador) -->
@@ -65,101 +155,139 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/layout_buscador"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="-6dp"
+                android:layout_marginTop="4dp"
                 android:visibility="gone"
-                app:cardBackgroundColor="#1E1E1E"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="10dp">
+                app:cardBackgroundColor="?attr/cardColor"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_sugerencias"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"/>
+                    android:nestedScrollingEnabled="false"
+                    android:paddingVertical="4dp"/>
 
             </androidx.cardview.widget.CardView>
 
         </RelativeLayout>
 
-        <!-- Barra de Pestañas (Nube | Favoritas | Descargadas) -->
-        <LinearLayout
+        <!-- Barra de Pestañas / Pills (Todos | Favoritas | Offline | Álbumes) -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp">
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            android:scrollbars="none">
 
-            <android.widget.Button
-                android:id="@+id/btn_tab_nube"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:text="🔍 BUSCAR"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:background="@drawable/bg_button_gradient" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <android.widget.Button
-                android:id="@+id/btn_tab_favoritas"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="⭐ FAVORITAS"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:background="@drawable/bg_card_glowing" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_tab_nube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="Todos"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:paddingHorizontal="18dp"
+                    android:background="@drawable/bg_pill_active" />
 
-            <android.widget.Button
-                android:id="@+id/btn_tab_descargadas"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:text="📥 OFFLINE"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="#666666"
-                android:background="@drawable/bg_card_glowing" />
-        </LinearLayout>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_tab_favoritas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:text="Favoritas"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/textSecColor"
+                    android:paddingHorizontal="18dp"
+                    android:background="@drawable/bg_pill_inactive" />
 
-        <!-- Banner de Estado Modo Offline / Error de Conexión -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_tab_descargadas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:text="Offline"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/textSecColor"
+                    android:paddingHorizontal="18dp"
+                    android:background="@drawable/bg_pill_inactive" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_tab_albumes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="3dp"
+                    android:text="Álbumes"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/textSecColor"
+                    android:paddingHorizontal="18dp"
+                    android:background="@drawable/bg_pill_inactive" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Banner de Estado Modo Offline -->
         <TextView
             android:id="@+id/tv_offline_banner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🎧 MODO OFFLINE ACTIVO"
-            android:textColor="#F59E0B"
+            android:textColor="#FFFFFF"
             android:textSize="12sp"
             android:textStyle="bold"
             android:gravity="center"
             android:paddingVertical="6dp"
-            android:background="#241C10"
+            android:background="#EF4444"
+            android:layout_marginBottom="8dp"
             android:visibility="gone" />
 
-        <!-- Título de Sección -->
-        <TextView
-            android:id="@+id/tv_seccion_titulo"
+        <!-- Título de Sección y Contador -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Escuchadas recientemente"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="4dp" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="4dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_seccion_titulo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Resultados encontrados"
+                android:textColor="?attr/textMainColor"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_resultados_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 canciones"
+                android:textColor="@color/violet_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="12dp"
+            android:layout_margin="16dp"
             android:visibility="gone" />
 
         <!-- RecyclerView de lista de canciones -->
@@ -168,83 +296,207 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingHorizontal="10dp"
+            android:paddingHorizontal="12dp"
             android:paddingTop="4dp"
-            android:paddingBottom="12dp"
             android:clipToPadding="false" />
 
     </LinearLayout>
 
-    <!-- Mini-Reproductor Flotante en la Parte Inferior -->
-    <LinearLayout
+    <!-- Incluir Dashboard de Inicio -->
+    <include
+        layout="@layout/layout_inicio_dashboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/layout_mini_player" />
+
+    <!-- Mini-Reproductor Flotante en la Parte Inferior (Posicionado arriba de la barra inferior) -->
+    <androidx.cardview.widget.CardView
         android:id="@+id/layout_mini_player"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="horizontal"
-        android:paddingHorizontal="10dp"
-        android:gravity="center_vertical"
-        android:background="@drawable/bg_mini_player"
-        android:elevation="10dp"
+        android:layout_height="64dp"
+        android:layout_above="@+id/layout_bottom_nav"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="10dp"
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="?attr/cardColor"
+        app:cardElevation="8dp"
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            app:cardCornerRadius="6dp"
-            app:cardElevation="0dp"
-            android:backgroundTint="#F2F2F7">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingHorizontal="14dp"
+            android:gravity="center_vertical">
 
-            <ImageView
-                android:id="@+id/iv_mini_thumb"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="Mini Portada" />
-        </androidx.cardview.widget.CardView>
+            <!-- Portada de mini reproductor -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp"
+                android:backgroundTint="?attr/backgroundColor">
+
+                <ImageView
+                    android:id="@+id/iv_mini_thumb"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Mini Portada" />
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_mini_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Título de Canción"
+                    android:textColor="?attr/textMainColor"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <TextView
+                    android:id="@+id/tv_mini_artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Artista"
+                    android:textColor="?attr/textSecColor"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btn_mini_play_pause"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="?attr/textMainColor"
+                android:contentDescription="Play/Pausa" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Barra de Navegación Inferior Fija -->
+    <LinearLayout
+        android:id="@+id/layout_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="?attr/cardColor"
+        android:elevation="12dp"
+        android:gravity="center_vertical">
 
         <LinearLayout
+            android:id="@+id/nav_inicio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="12dp"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/iv_nav_inicio"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_home"
+                app:tint="?attr/textSecColor"/>
             <TextView
-                android:id="@+id/tv_mini_title"
-                android:layout_width="match_parent"
+                android:id="@+id/tv_nav_inicio"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Canción"
-                android:textColor="#000000"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end" />
-
-            <TextView
-                android:id="@+id/tv_mini_artist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Artista"
-                android:textColor="#666666"
-                android:textSize="12sp"
-                android:maxLines="1"
-                android:ellipsize="end" />
+                android:text="Inicio"
+                android:textSize="11sp"
+                android:textColor="?attr/textSecColor"
+                android:layout_marginTop="3dp"/>
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btn_mini_play_pause"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_media_pause"
-            app:tint="#000000"
-            android:contentDescription="Play/Pausa" />
+        <LinearLayout
+            android:id="@+id/nav_buscar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/iv_nav_buscar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_search"
+                app:tint="@color/violet_primary"/>
+            <TextView
+                android:id="@+id/tv_nav_buscar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Buscar"
+                android:textSize="11sp"
+                android:textColor="@color/violet_primary"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/nav_favoritas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/iv_nav_favoritas"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_heart_outline"
+                app:tint="?attr/textSecColor"/>
+            <TextView
+                android:id="@+id/tv_nav_favoritas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Favoritas"
+                android:textSize="11sp"
+                android:textColor="?attr/textSecColor"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_descargas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/iv_nav_descargas"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_download"
+                app:tint="?attr/textSecColor"/>
+            <TextView
+                android:id="@+id/tv_nav_descargas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descargas"
+                android:textSize="11sp"
+                android:textColor="?attr/textSecColor"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- CAPA DE AUTENTICACIÓN Y REGISTRO (OVERLAY BLOQUEADO) -->
@@ -255,7 +507,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="24dp"
-        android:background="#F2F2F7"
+        android:background="?attr/backgroundColor"
         android:clickable="true"
         android:focusable="true"
         android:elevation="20dp"
@@ -275,7 +527,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔐 Registro de Usuario"
-                android:textColor="#8E44AD"
+                android:textColor="@color/violet_primary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
@@ -284,7 +536,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ingresa tu nombre y celular para recibir tu código PIN de verificación."
-                android:textColor="#666666"
+                android:textColor="?attr/textSecColor"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:layout_marginBottom="20dp" />
@@ -294,8 +546,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="👤 Nombre y Apellido"
-                android:textColorHint="#666666"
-                android:textColor="#000000"
+                android:textColorHint="?attr/textSecColor"
+                android:textColor="?attr/textMainColor"
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
                 android:background="@drawable/bg_edittext"
@@ -307,8 +559,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="📱 Número de Celular"
-                android:textColorHint="#666666"
-                android:textColor="#000000"
+                android:textColorHint="?attr/textSecColor"
+                android:textColor="?attr/textMainColor"
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
                 android:background="@drawable/bg_edittext"
@@ -322,8 +574,8 @@
                 android:text="SOLICITAR CÓDIGO PIN"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
-                android:background="@drawable/bg_button_gradient" />
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_pill_active" />
 
         </LinearLayout>
 
@@ -342,7 +594,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔑 Código de Verificación"
-                android:textColor="#0284C7"
+                android:textColor="@color/violet_primary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
@@ -352,7 +604,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ingresa el código PIN de 4 dígitos enviado a tu dispositivo:"
-                android:textColor="#666666"
+                android:textColor="?attr/textSecColor"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:layout_marginBottom="20dp" />
@@ -362,8 +614,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:hint="🔑 PIN de 4 dígitos"
-                android:textColorHint="#666666"
-                android:textColor="#34D399"
+                android:textColorHint="?attr/textSecColor"
+                android:textColor="?attr/textMainColor"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -380,8 +632,8 @@
                 android:text="VERIFICAR CÓDIGO PIN"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
-                android:background="@drawable/bg_button_gradient" />
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_pill_active" />
 
         </LinearLayout>
 
@@ -410,7 +662,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¡Código PIN verificado con éxito! Tu dispositivo ya aparece en el Panel Administrador. Espera a que Harold lo apruebe."
-                android:textColor="#666666"
+                android:textColor="?attr/textSecColor"
                 android:textSize="14sp"
                 android:gravity="center"
                 android:layout_marginBottom="24dp" />
@@ -422,8 +674,8 @@
                 android:text="🔄 VERIFICAR APROBACIÓN"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
-                android:background="@drawable/bg_button_gradient" />
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_pill_active" />
 
         </LinearLayout>
 
