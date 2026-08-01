@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         const val TAB_NUBE = 0
         const val TAB_FAVORITAS = 1
         const val TAB_DESCARGADAS = 2
-        const val DEFAULT_URL = "https://engine-clubs-cassette-respect.trycloudflare.com/"
+        const val DEFAULT_URL = "https://haroldstream.me/"
     }
 
     private val PREFS_NAME = "HaroldSoundPrefs"
