@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
     private val debounceHandler = Handler(Looper.getMainLooper())
     private var debounceRunnable: Runnable? = null
+    private var isSelectingSuggestion = false
 
     companion object {
         const val TAB_NUBE = 0
@@ -257,12 +258,15 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                // --- BLOQUEO CLAVE ---
+                if (isSelectingSuggestion) return
+                // ---------------------
+
                 val query = s.toString().trim()
                 if (query.isEmpty() && tabActual == TAB_NUBE) {
                     mostrarHistorialBusquedaGlobal()
                     cargarHistorialYRecomendaciones()
                 } else if (tabActual == TAB_NUBE) {
-                    // Cancelar la petición anterior si sigue escribiendo rápido
                     debounceRunnable?.let { debounceHandler.removeCallbacks(it) }
                     debounceRunnable = Runnable {
                         buscarSugerenciasApi(query)
@@ -276,16 +280,31 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         cvSugerenciasContainer = findViewById(R.id.cv_sugerencias_container)
 
         suggestionAdapter = SuggestionAdapter(emptyList(), true) { terminoSelect ->
+            isSelectingSuggestion = true // Activamos el escudo para el TextWatcher
+            debounceRunnable?.let { debounceHandler.removeCallbacks(it) }
+
+            cvSugerenciasContainer.visibility = View.GONE
+
             etBusqueda.setText(terminoSelect)
             etBusqueda.setSelection(terminoSelect.length)
-            cvSugerenciasContainer.visibility = View.GONE
+
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(etBusqueda.windowToken, 0)
+
             ejecutarBusqueda(etBusqueda, progressBarMain)
+
+            // Soltamos el escudo después de un momento
+            debounceHandler.postDelayed({
+                isSelectingSuggestion = false
+            }, 600)
         }
         rvSugerencias.layoutManager = LinearLayoutManager(this)
         rvSugerencias.adapter = suggestionAdapter
 
         // Mostrar historial al hacer click en el buscador
         etBusqueda.setOnFocusChangeListener { _, hasFocus ->
+            if (isSelectingSuggestion) return@setOnFocusChangeListener // <--- Si estamos eligiendo, no hacemos nada
+
             if (hasFocus && etBusqueda.text.toString().trim().isEmpty()) {
                 mostrarHistorialBusquedaGlobal()
             } else {
