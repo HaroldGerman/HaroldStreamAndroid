@@ -34,6 +34,16 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
+        <ImageButton
+            android:id="@+id/btn_queue"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_list"
+            app:tint="?attr/textMainColor"
+            android:contentDescription="Cola de reproducción" />
+
     </RelativeLayout>
 
     <!-- Portada del Álbum Gigante Redondeada -->

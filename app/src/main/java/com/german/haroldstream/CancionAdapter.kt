@@ -36,6 +36,23 @@ class CancionAdapter(
 
         holder.tvTitulo.text = cancion.titulo ?: "Sin título"
 
+        val isCurrentPlaying = PlayerManager.currentCancion?.let {
+            it.titulo == cancion.titulo && it.canal == cancion.canal
+        } ?: false
+
+        if (isCurrentPlaying) {
+            holder.tvTitulo.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.violet_primary))
+        } else {
+            val typedValue = android.util.TypedValue()
+            context.theme.resolveAttribute(R.attr.textMainColor, typedValue, true)
+            val normalColor = if (typedValue.resourceId != 0) {
+                androidx.core.content.ContextCompat.getColor(context, typedValue.resourceId)
+            } else {
+                typedValue.data
+            }
+            holder.tvTitulo.setTextColor(normalColor)
+        }
+
         val canal = if (cancion.canal == "<unknown>") "HaroldSound MP3" else (cancion.canal ?: "HaroldSound MP3")
         val duracion = cancion.duracion ?: ""
         val subtitulo = when {

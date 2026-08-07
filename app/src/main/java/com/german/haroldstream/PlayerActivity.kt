@@ -153,6 +153,11 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             }
         }
 
+        val btnQueue = findViewById<ImageButton>(R.id.btn_queue)
+        btnQueue?.setOnClickListener {
+            mostrarBottomSheetQueue()
+        }
+
         val btnAddPlaylist = findViewById<ImageButton>(R.id.btn_add_playlist)
         btnAddPlaylist?.setOnClickListener {
             btnPlayerStar.performClick()
@@ -460,11 +465,12 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             show()
         }
 
+        val devId = UserAuthManager.obtenerDeviceId(this)
         val baseUrl = if (MainActivity.DEFAULT_URL.endsWith("/")) MainActivity.DEFAULT_URL else "${MainActivity.DEFAULT_URL}/"
         val endpoint = if (isAudioOnly) {
-            "${baseUrl}api/recortar-audio-portada?url=${Uri.encode(originalUrl)}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&start=$start&end=$end&title=${Uri.encode(cancion.titulo ?: "")}&artist=${Uri.encode(cancion.canal ?: "")}"
+            "${baseUrl}api/recortar-audio-portada?url=${Uri.encode(originalUrl)}&thumb=${Uri.encode(cancion.thumbnail ?: "")}&start=$start&end=$end&title=${Uri.encode(cancion.titulo ?: "")}&artist=${Uri.encode(cancion.canal ?: "")}&deviceId=$devId"
         } else {
-            "${baseUrl}api/recortar-video?url=${Uri.encode(originalUrl)}&start=$start&end=$end"
+            "${baseUrl}api/recortar-video?url=${Uri.encode(originalUrl)}&start=$start&end=$end&deviceId=$devId"
         }
 
         lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
@@ -529,6 +535,48 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         } catch (e: Exception) {
             Toast.makeText(this, "Error al compartir archivo: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun mostrarBottomSheetQueue() {
+        val bottomSheet = BottomSheetDialog(this, R.style.DarkBottomSheetDialog)
+        val view = layoutInflater.inflate(R.layout.layout_bottom_sheet_queue, null)
+        bottomSheet.setContentView(view)
+
+        val rvQueue = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rv_queue)
+        val tvTitle = view.findViewById<TextView>(R.id.tv_queue_title)
+
+        val lista = PlayerManager.listaReproduccion
+        if (lista.isEmpty()) {
+            tvTitle.text = "No hay canciones en la lista"
+            rvQueue.visibility = View.GONE
+        } else {
+            tvTitle.text = "Siguiente en la lista (${lista.size})"
+            rvQueue.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+            
+            val queueAdapter = CancionAdapter(lista, onClick = { cancionSelected ->
+                val posicion = PlayerManager.listaReproduccion.indexOf(cancionSelected)
+                if (posicion != -1) {
+                    PlayerManager.establecerListaReproduccion(PlayerManager.listaReproduccion, posicion)
+                    PlayerManager.onAutoPlayNextListener?.invoke(cancionSelected)
+                    bottomSheet.dismiss()
+                }
+            }, onFavoriteToggle = { cancion, nuevoEstado ->
+                if (nuevoEstado) {
+                    LocalMusicManager.guardarFavorito(this, cancion)
+                } else {
+                    LocalMusicManager.quitarFavorito(this, cancion)
+                }
+            })
+            rvQueue.adapter = queueAdapter
+            
+            // Hacer scroll hasta la canción que se está reproduciendo actualmente
+            val currentPos = PlayerManager.indiceActual
+            if (currentPos in lista.indices) {
+                rvQueue.scrollToPosition(currentPos)
+            }
+        }
+
+        bottomSheet.show()
     }
 
     override fun onDestroy() {

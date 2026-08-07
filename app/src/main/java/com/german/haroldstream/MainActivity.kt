@@ -1134,9 +1134,9 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         val urlOriginal = cancion.url
         if (!urlOriginal.isNullOrEmpty()) {
             val encodedUrl = Uri.encode(urlOriginal)
-            // Asegurarnos de que DEFAULT_URL termina en /
             val baseUrl = if (DEFAULT_URL.endsWith("/")) DEFAULT_URL else "$DEFAULT_URL/"
-            val streamUrl = "${baseUrl}stream?url=$encodedUrl"
+            val devId = UserAuthManager.obtenerDeviceId(this)
+            val streamUrl = "${baseUrl}stream?url=$encodedUrl&deviceId=$devId"
             
             val cancionStream = cancion.copy(
                 url = urlOriginal // Guardamos la original para poder descargarla después si la hace favorita
