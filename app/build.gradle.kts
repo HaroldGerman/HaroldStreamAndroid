@@ -14,8 +14,8 @@ android {
         applicationId = "com.german.haroldstream"
         minSdk = 24
         targetSdk = 36
-        versionCode = 27
-        versionName = "24.1"
+        versionCode = 28
+        versionName = "25.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
