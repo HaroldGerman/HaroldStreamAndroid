@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:layout_marginVertical="6dp"
+    android:background="@drawable/bg_song_item"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:elevation="2dp">
+
+    <!-- CardView para esquinas redondeadas de la miniatura -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="0dp"
+        android:backgroundTint="?attr/backgroundColor">
+
+        <ImageView
+            android:id="@+id/iv_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Portada" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Información de la canción -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="14dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="?attr/textMainColor"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tv_subtitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:textColor="?attr/textSecColor"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+    <!-- Botón Favorito estilo Spotify (+ / Check) con fondo circular -->
+    <ImageButton
+        android:id="@+id/btn_favorito"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_circle_btn"
+        android:src="@drawable/ic_spotify_plus"
+        app:tint="?attr/textMainColor"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="Agregar a Favoritos"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Botón Violeta de Reproducción Rápida -->
+    <ImageView
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_pill_active"
+        android:src="@android:drawable/ic_media_play"
+        app:tint="#FFFFFF"
+        android:padding="10dp"
+        android:contentDescription="Reproducir rápido" />
+
+</LinearLayout>

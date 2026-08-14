@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/cardColor"
+    android:padding="24dp"
+    android:elevation="8dp">
+
+    <!-- Cabecera de Filtros -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filtros"
+            android:textColor="?attr/textMainColor"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true" />
+
+        <ImageButton
+            android:id="@+id/btn_close_filters"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="?attr/textMainColor"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="Cerrar" />
+    </RelativeLayout>
+
+    <!-- Filtro Favoritos -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mostrar sólo canciones favoritas"
+            android:textColor="?attr/textMainColor"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/cb_filter_favs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/violet_primary" />
+    </LinearLayout>
+
+    <!-- Duración Slider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Duración máxima"
+                android:textColor="?attr/textMainColor"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_filter_duration_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10:00+"
+                android:textColor="@color/violet_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/sb_filter_duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="600"
+            android:progress="600"
+            android:progressBackgroundTint="?attr/borderColor"
+            android:progressTint="@color/violet_primary"
+            android:thumbTint="@color/violet_primary" />
+    </LinearLayout>
+
+    <!-- Categorías (Píldoras) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Categorías"
+        android:textColor="?attr/textMainColor"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:id="@+id/pill_cat_todas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Todas"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_pill_active"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/pill_cat_lentas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lentas"
+            android:textColor="?attr/textSecColor"
+            android:background="@drawable/bg_pill_inactive"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/pill_cat_rapidas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rápidas"
+            android:textColor="?attr/textSecColor"
+            android:background="@drawable/bg_pill_inactive"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Botones Finales -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_filter_clear"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Limpiar"
+            android:textColor="?attr/textSecColor"
+            android:background="@drawable/bg_pill_inactive"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_filter_apply"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Aplicar"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_pill_active"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
