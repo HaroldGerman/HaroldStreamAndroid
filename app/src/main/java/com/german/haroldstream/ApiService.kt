@@ -39,6 +39,7 @@ interface ApiService {
     @Headers("ngrok-skip-browser-warning: any_value")
     @GET("api/playlist-songs")
     suspend fun obtenerCancionesPlaylist(@Query("url") url: String): SearchResponse
+<<<<<<< HEAD
 
     @Headers("ngrok-skip-browser-warning: any_value")
     @GET("api/mas-escuchadas")
@@ -51,6 +52,8 @@ interface ApiService {
     @Headers("ngrok-skip-browser-warning: any_value")
     @GET("api/genero-playlist")
     suspend fun obtenerPlaylistGenero(@Query("genero") genero: String, @Query("max_results") maxResults: Int = 30): SearchResponse
+=======
+>>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
 }
 
 // Añade este data class al final de tu archivo ApiService.kt

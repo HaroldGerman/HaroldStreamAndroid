@@ -146,6 +146,7 @@ object  PlayerManager {
         }
     }
 
+<<<<<<< HEAD
     var defaultServerUrl: String = "https://haroldstream.me"
 
     fun reproducirCancionDirecto(context: Context, cancion: Cancion) {
@@ -162,6 +163,8 @@ object  PlayerManager {
         playCancion(context, cancion, streamUrl)
     }
 
+=======
+>>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
     fun siguienteCancion(context: Context) {
         if (listaReproduccion.isEmpty()) {
             onAutoPlayRelatedListener?.invoke(currentCancion)
@@ -169,29 +172,51 @@ object  PlayerManager {
         }
 
         val nuevoIndice = if (isShuffleOn) {
+<<<<<<< HEAD
+=======
+            // Modo aleatorio: elegir una canción al azar diferente a la actual
+>>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
             val indices = listaReproduccion.indices.filter { it != indiceActual }
             if (indices.isEmpty()) 0 else indices.random()
         } else {
             (indiceActual + 1) % listaReproduccion.size
         }
 
+<<<<<<< HEAD
         indiceActual = nuevoIndice
         val siguiente = listaReproduccion[nuevoIndice]
         
         reproducirCancionDirecto(context, siguiente)
+=======
+        if (!isShuffleOn && nuevoIndice == 0 && listaReproduccion.size > 1) {
+            onAutoPlayRelatedListener?.invoke(currentCancion)
+            return
+        }
+
+        indiceActual = nuevoIndice
+        val siguiente = listaReproduccion[nuevoIndice]
+>>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
         onAutoPlayNextListener?.invoke(siguiente)
     }
 
     fun anteriorCancion(context: Context) {
+<<<<<<< HEAD
         if (listaReproduccion.isEmpty() || (player?.currentPosition ?: 0L) > 4000) {
+=======
+        // Reiniciar la canción si: no hay lista, es la primera canción, o ya pasaron más de 3 segundos
+        if (listaReproduccion.isEmpty() || indiceActual == 0 || (player?.currentPosition ?: 0L) > 3000) {
+>>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
             seekTo(0)
             return
         }
         val nuevoIndice = if (indiceActual - 1 < 0) listaReproduccion.size - 1 else indiceActual - 1
         indiceActual = nuevoIndice
         val anterior = listaReproduccion[nuevoIndice]
+<<<<<<< HEAD
         
         reproducirCancionDirecto(context, anterior)
+=======
+>>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
         onAutoPlayNextListener?.invoke(anterior)
     }
 
