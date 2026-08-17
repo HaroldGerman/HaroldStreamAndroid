@@ -22,6 +22,8 @@ import coil.load
 import android.content.Intent
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
@@ -160,7 +162,14 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
         val btnAddPlaylist = findViewById<ImageButton>(R.id.btn_add_playlist)
         btnAddPlaylist?.setOnClickListener {
-            btnPlayerStar.performClick()
+            currentCancionLocal?.let { cancion ->
+                mostrarBottomSheetAñadirAPlaylist(cancion)
+            }
+        }
+
+        val btnLyrics = findViewById<ImageButton>(R.id.btn_lyrics)
+        btnLyrics?.setOnClickListener {
+            mostrarBottomSheetLetras()
         }
 
         val p = PlayerManager.getOrCreatePlayer(this)
@@ -577,6 +586,186 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
 
         bottomSheet.show()
+    }
+
+    private fun limpiarLrcParaMostrar(texto: String): String {
+        return texto.lines().map { line ->
+            line.replace(Regex("\\[\\d{2}:\\d{2}(?:\\.\\d{2,3})?\\]"), "").trim()
+        }.filter { it.isNotBlank() }.joinToString("\n\n")
+    }
+
+    private fun mostrarBottomSheetLetras() {
+        val cancion = currentCancionLocal ?: return
+        val title = cancion.titulo ?: "Canción"
+        val canal = cancion.canal ?: "Artista"
+
+        val dialogView = layoutInflater.inflate(R.layout.layout_bottom_sheet_lyrics, null)
+        val bottomSheet = BottomSheetDialog(this, R.style.DarkBottomSheetDialog)
+        bottomSheet.setContentView(dialogView)
+
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tv_lyrics_title)
+        val tvLyricsContent = dialogView.findViewById<TextView>(R.id.tv_lyrics_content)
+        val containerLines = dialogView.findViewById<LinearLayout>(R.id.container_lyrics_lines)
+        val svScroll = dialogView.findViewById<androidx.core.widget.NestedScrollView>(R.id.sv_lyrics_scroll)
+        val progressBar = dialogView.findViewById<android.widget.ProgressBar>(R.id.pb_lyrics_loading)
+
+        tvTitle.text = "🎤 Letra: $title"
+        progressBar.visibility = View.VISIBLE
+        tvLyricsContent.visibility = View.GONE
+
+        var lyricsJob: kotlinx.coroutines.Job? = null
+
+        lifecycleScope.launch {
+            val fetched = LyricsManager.fetchOnlineLyrics(title, canal)
+            progressBar.visibility = View.GONE
+            
+            if (!fetched.isNullOrBlank()) {
+                val parsedLines = LyricsManager.parseLrc(fetched)
+                if (parsedLines.isNotEmpty()) {
+                    tvLyricsContent.visibility = View.GONE
+                    containerLines.removeAllViews()
+
+                    val textViews = mutableListOf<TextView>()
+                    val activeBg = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 24f
+                        colors = intArrayOf(
+                            android.graphics.Color.parseColor("#7356F1"),
+                            android.graphics.Color.parseColor("#9E6CFF")
+                        )
+                    }
+
+                    for (item in parsedLines) {
+                        val tv = TextView(this@PlayerActivity).apply {
+                            text = item.text
+                            textSize = 16f
+                            setTextColor(android.graphics.Color.parseColor("#80FFFFFF"))
+                            setPadding(28, 16, 28, 16)
+                            gravity = android.view.Gravity.CENTER
+                            isClickable = true
+                            isFocusable = true
+                            setOnClickListener {
+                                PlayerManager.player?.seekTo(item.timeMs)
+                            }
+                        }
+                        containerLines.addView(tv)
+                        textViews.add(tv)
+                    }
+
+                    lyricsJob = lifecycleScope.launch {
+                        var lastActiveIdx = -1
+                        while (isActive && bottomSheet.isShowing) {
+                            val playerPos = PlayerManager.player?.currentPosition ?: 0L
+                            var currentIdx = -1
+
+                            for (i in parsedLines.indices) {
+                                if (playerPos >= parsedLines[i].timeMs) {
+                                    currentIdx = i
+                                } else {
+                                    break
+                                }
+                            }
+
+                            if (currentIdx != -1 && currentIdx != lastActiveIdx) {
+                                lastActiveIdx = currentIdx
+                                for (i in textViews.indices) {
+                                    val tv = textViews[i]
+                                    if (i == currentIdx) {
+                                        tv.setTextColor(android.graphics.Color.WHITE)
+                                        tv.textSize = 19f
+                                        tv.setTypeface(null, android.graphics.Typeface.BOLD)
+                                        tv.background = activeBg
+                                        svScroll.smoothScrollTo(0, tv.top - (svScroll.height / 2) + (tv.height / 2))
+                                    } else {
+                                        tv.setTextColor(android.graphics.Color.parseColor("#80FFFFFF"))
+                                        tv.textSize = 15f
+                                        tv.setTypeface(null, android.graphics.Typeface.NORMAL)
+                                        tv.background = null
+                                    }
+                                }
+                            }
+                            delay(150)
+                        }
+                    }
+                } else {
+                    tvLyricsContent.visibility = View.VISIBLE
+                    tvLyricsContent.text = limpiarLrcParaMostrar(fetched)
+                }
+            } else {
+                tvLyricsContent.visibility = View.VISIBLE
+                tvLyricsContent.text = "No se encontró la letra para esta canción."
+            }
+        }
+
+        bottomSheet.setOnDismissListener {
+            lyricsJob?.cancel()
+        }
+
+        bottomSheet.show()
+    }
+
+    private fun mostrarBottomSheetAñadirAPlaylist(cancion: Cancion) {
+        val playlists = LocalMusicManager.obtenerPlaylistsPersonalizadas(this).toMutableList()
+
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("📂 Añadir a Playlist")
+
+        val items = mutableListOf<String>()
+        items.add("➕ Crear nueva playlist...")
+        playlists.forEach {
+            items.add("${it.nombre} (${it.canciones.size} canciones)")
+        }
+
+        builder.setItems(items.toTypedArray()) { dialog, which ->
+            if (which == 0) {
+                mostrarDialogoCrearPlaylist(cancion) { nueva ->
+                    Toast.makeText(this, "✓ Playlist '${nueva.nombre}' creada con esta canción 🎵", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                val targetPlaylist = playlists[which - 1]
+                val added = LocalMusicManager.agregarCancionAPlaylist(this, targetPlaylist.id, cancion)
+                if (added) {
+                    Toast.makeText(this, "✓ Canción añadida a '${targetPlaylist.nombre}' 🎵", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "No se pudo añadir a la playlist", Toast.LENGTH_SHORT).show()
+                }
+            }
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun mostrarDialogoCrearPlaylist(cancionToAdd: Cancion? = null, onCreated: ((CustomPlaylist) -> Unit)? = null) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("➕ Nueva Playlist")
+
+        val input = EditText(this)
+        input.hint = "Ej. Mis Favoritas, Fiesta, Rock"
+        input.setPadding(36, 24, 36, 24)
+        input.isSingleLine = true
+        builder.setView(input)
+
+        builder.setPositiveButton("Crear") { dialog, _ ->
+            val nombre = input.text.toString().trim()
+            if (nombre.isNotEmpty()) {
+                val nueva = LocalMusicManager.crearPlaylistPersonalizada(this, nombre)
+                if (cancionToAdd != null) {
+                    LocalMusicManager.agregarCancionAPlaylist(this, nueva.id, cancionToAdd)
+                }
+                onCreated?.invoke(nueva)
+            } else {
+                Toast.makeText(this, "Por favor ingresa un nombre para la playlist", Toast.LENGTH_SHORT).show()
+            }
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 
     override fun onDestroy() {

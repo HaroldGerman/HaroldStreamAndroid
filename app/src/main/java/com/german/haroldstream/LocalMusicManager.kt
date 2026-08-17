@@ -175,7 +175,74 @@ object LocalMusicManager {
         return listaLocal.distinctBy { normalizar(it.titulo) }
     }
 
+    private const val KEY_CUSTOM_PLAYLISTS_JSON = "key_custom_playlists_json"
+
+    fun obtenerPlaylistsPersonalizadas(context: Context): List<CustomPlaylist> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_CUSTOM_PLAYLISTS_JSON, null) ?: return emptyList()
+        return try {
+            val listType = object : TypeToken<List<CustomPlaylist>>() {}.type
+            Gson().fromJson(json, listType) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun guardarPlaylistsPersonalizadas(context: Context, playlists: List<CustomPlaylist>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = Gson().toJson(playlists)
+        prefs.edit().putString(KEY_CUSTOM_PLAYLISTS_JSON, json).apply()
+    }
+
+    fun crearPlaylistPersonalizada(context: Context, nombre: String): CustomPlaylist {
+        val playlists = obtenerPlaylistsPersonalizadas(context).toMutableList()
+        val nueva = CustomPlaylist(nombre = nombre)
+        playlists.add(0, nueva)
+        guardarPlaylistsPersonalizadas(context, playlists)
+        return nueva
+    }
+
+    fun agregarCancionAPlaylist(context: Context, playlistId: String, cancion: Cancion): Boolean {
+        val playlists = obtenerPlaylistsPersonalizadas(context).toMutableList()
+        val index = playlists.indexOfFirst { it.id == playlistId }
+        if (index != -1) {
+            val target = playlists[index]
+            target.canciones.removeAll { normalizar(it.titulo) == normalizar(cancion.titulo) || (it.id != null && it.id == cancion.id) }
+            target.canciones.add(0, cancion)
+            guardarPlaylistsPersonalizadas(context, playlists)
+            return true
+        }
+        return false
+    }
+
+    fun eliminarCancionDePlaylist(context: Context, playlistId: String, cancion: Cancion): Boolean {
+        val playlists = obtenerPlaylistsPersonalizadas(context).toMutableList()
+        val index = playlists.indexOfFirst { it.id == playlistId }
+        if (index != -1) {
+            val target = playlists[index]
+            target.canciones.removeAll { normalizar(it.titulo) == normalizar(cancion.titulo) || (it.id != null && it.id == cancion.id) }
+            guardarPlaylistsPersonalizadas(context, playlists)
+            return true
+        }
+        return false
+    }
+
+    fun eliminarPlaylistPersonalizada(context: Context, playlistId: String): Boolean {
+        val playlists = obtenerPlaylistsPersonalizadas(context).toMutableList()
+        val removed = playlists.removeAll { it.id == playlistId }
+        if (removed) {
+            guardarPlaylistsPersonalizadas(context, playlists)
+        }
+        return removed
+    }
+
     private fun normalizar(texto: String?): String {
         return (texto ?: "").lowercase().trim().replace(Regex("[^a-z0-9]"), "")
     }
 }
+
+data class CustomPlaylist(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val nombre: String,
+    val canciones: MutableList<Cancion> = mutableListOf()
+)

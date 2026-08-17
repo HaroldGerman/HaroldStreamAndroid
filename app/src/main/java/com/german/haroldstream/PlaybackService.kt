@@ -29,13 +29,9 @@ class PlaybackService : MediaSessionService(), PlayerManager.PlayerStateListener
                 override fun getAvailableCommands(): Player.Commands {
                     return super.getAvailableCommands().buildUpon()
                         .add(Player.COMMAND_SEEK_TO_NEXT)
-<<<<<<< HEAD
                         .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
                         .add(Player.COMMAND_SEEK_TO_PREVIOUS)
                         .add(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
-=======
-                        .add(Player.COMMAND_SEEK_TO_PREVIOUS)
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
                         .build()
                 }
 
@@ -46,7 +42,6 @@ class PlaybackService : MediaSessionService(), PlayerManager.PlayerStateListener
                     PlayerManager.siguienteCancion(this@PlaybackService)
                 }
 
-<<<<<<< HEAD
                 override fun seekToNextMediaItem() {
                     PlayerManager.siguienteCancion(this@PlaybackService)
                 }
@@ -58,11 +53,6 @@ class PlaybackService : MediaSessionService(), PlayerManager.PlayerStateListener
                 override fun seekToPreviousMediaItem() {
                     PlayerManager.anteriorCancion(this@PlaybackService)
                 }
-=======
-                override fun seekToPrevious() {
-                    PlayerManager.anteriorCancion(this@PlaybackService)
-                }
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
             }
 
             val intent = Intent(this, MainActivity::class.java)

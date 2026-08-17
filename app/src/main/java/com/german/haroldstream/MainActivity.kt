@@ -153,10 +153,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-<<<<<<< HEAD
         PlayerManager.defaultServerUrl = DEFAULT_URL
-=======
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
         verificarPermisosLecturaAudio()
 
         // 1. Vincular vistas principales
@@ -1245,11 +1242,8 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
     }
 
-<<<<<<< HEAD
     private var cacheAlbumesPopulares: List<Playlist>? = null
 
-=======
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
     private fun cargarAlbumes(query: String) {
         val api = obtenerApiService()
         if (api == null) {
@@ -1258,43 +1252,41 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             return
         }
 
-<<<<<<< HEAD
         val rvResultados = findViewById<RecyclerView>(R.id.rv_resultados)
         rvResultados?.adapter = playlistAdapter
 
+        val customPlaylists = LocalMusicManager.obtenerPlaylistsPersonalizadas(this)
+        val customMapped = customPlaylists.map { cp ->
+            Playlist(
+                titulo = "📂 ${cp.nombre}",
+                url = "custom:${cp.id}",
+                thumbnail = if (cp.canciones.isNotEmpty()) cp.canciones[0].thumbnail else null,
+                video_count = cp.canciones.size,
+                canal = "${cp.canciones.size} canciones"
+            )
+        }
+
         if (query.isEmpty() && !cacheAlbumesPopulares.isNullOrEmpty()) {
-            tvSeccionTitulo.text = "💿 Álbumes populares"
-            playlistAdapter.actualizarLista(cacheAlbumesPopulares!!)
+            tvSeccionTitulo.text = "💿 Playlists y Álbumes"
+            playlistAdapter.actualizarLista(customMapped + cacheAlbumesPopulares!!)
             progressBarMain.visibility = View.GONE
             return
         }
 
         val terminoBusqueda = if (query.isNotEmpty()) query else "album popular completo exitos"
-        tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Álbumes de \"$query\"" else "💿 Álbumes populares"
+        tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Álbumes de \"$query\"" else "💿 Playlists y Álbumes"
         progressBarMain.visibility = View.VISIBLE
-=======
-        val terminoBusqueda = if (query.isNotEmpty()) query else "album popular completo exitos"
-        tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Albunes de \"$query\"" else "💿 Albunes populares"
-        progressBarMain.visibility = View.VISIBLE
-        
-        val rvResultados = findViewById<RecyclerView>(R.id.rv_resultados)
-        rvResultados?.adapter = playlistAdapter
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
-        playlistAdapter.actualizarLista(emptyList())
+        playlistAdapter.actualizarLista(customMapped)
 
         lifecycleScope.launch {
             try {
                 val respuesta = api.buscarPlaylists(terminoBusqueda)
                 if (respuesta.playlists.isNotEmpty()) {
-<<<<<<< HEAD
                     if (query.isEmpty()) {
                         cacheAlbumesPopulares = respuesta.playlists
                     }
-                    tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Álbumes de \"$query\" (${respuesta.playlists.size})" else "💿 Álbumes populares"
-=======
-                    tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Albunes de \"$query\" (${respuesta.playlists.size})" else "💿 Albunes populares"
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
-                    playlistAdapter.actualizarLista(respuesta.playlists)
+                    tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Álbumes de \"$query\" (${respuesta.playlists.size})" else "💿 Playlists y Álbumes"
+                    playlistAdapter.actualizarLista(customMapped + respuesta.playlists)
                 } else {
                     // Fallback: Si no hay playlists, intentar buscar videos normales de tipo álbum
                     val respuestaCanciones = api.buscarCancion("$terminoBusqueda completo")
@@ -1306,14 +1298,12 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                     if (albumes.isNotEmpty()) {
                         rvResultados?.adapter = adapter
                         listaCancionesActuales = albumes
-<<<<<<< HEAD
                         tvSeccionTitulo.text = "💿 Álbumes de artistas"
-=======
-                        tvSeccionTitulo.text = "💿 Albunes de artistas"
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
                         adapter.actualizarLista(albumes)
                     } else {
-                        Toast.makeText(this@MainActivity, "No se encontraron álbumes", Toast.LENGTH_SHORT).show()
+                        if (customMapped.isEmpty()) {
+                            Toast.makeText(this@MainActivity, "No se encontraron álbumes", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -1327,11 +1317,26 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
     private fun cargarCancionesDePlaylist(playlist: Playlist) {
         val playlistUrl = playlist.url ?: return
-        progressBarMain.visibility = View.VISIBLE
-        tvSeccionTitulo.text = "💿 Cargando canciones..."
-        
         val rvResultados = findViewById<RecyclerView>(R.id.rv_resultados)
         rvResultados?.adapter = adapter // Volver a mostrar adaptador de canciones
+
+        if (playlistUrl.startsWith("custom:")) {
+            val customId = playlistUrl.removePrefix("custom:")
+            val customPlaylists = LocalMusicManager.obtenerPlaylistsPersonalizadas(this)
+            val found = customPlaylists.find { it.id == customId }
+            if (found != null && found.canciones.isNotEmpty()) {
+                listaCancionesActuales = found.canciones
+                tvSeccionTitulo.text = "📂 ${found.nombre} (${found.canciones.size})"
+                adapter.actualizarLista(found.canciones)
+            } else {
+                Toast.makeText(this, "Esta playlist aún está vacía. ¡Agrégale canciones!", Toast.LENGTH_SHORT).show()
+                rvResultados?.adapter = playlistAdapter
+            }
+            return
+        }
+
+        progressBarMain.visibility = View.VISIBLE
+        tvSeccionTitulo.text = "💿 Cargando canciones..."
         adapter.actualizarLista(emptyList())
 
         val api = obtenerApiService()
@@ -1361,7 +1366,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
     }
 
-<<<<<<< HEAD
     private fun cargarVerTodoMasEscuchadas(titulo: String) {
         val etBusqueda = findViewById<EditText>(R.id.et_busqueda)
         cambiarPestaña(TAB_NUBE, etBusqueda)
@@ -1426,8 +1430,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
     }
 
-=======
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
     private fun inicializarDashboard() {
         val rvRec = findViewById<RecyclerView>(R.id.rv_dash_recomendadas)
         val rvPop = findViewById<RecyclerView>(R.id.rv_dash_populares)
@@ -1455,7 +1457,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             cambiarPestaña(TAB_FAVORITAS, etBusqueda)
         }
 
-<<<<<<< HEAD
         // Configurar clics en tarjetas de género musical
         findViewById<View>(R.id.card_genero_reggaeton)?.setOnClickListener { cargarCancionesPorGenero("reggaeton", "🔥 Reggaetón & Urbano") }
         findViewById<View>(R.id.card_genero_rock)?.setOnClickListener { cargarCancionesPorGenero("rock", "🎸 Rock & Alternativo") }
@@ -1475,9 +1476,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         findViewById<View>(R.id.tv_dash_ver_todo_nuevas)?.setOnClickListener {
             cargarVerTodoNuevas("⚡ Nuevos lanzamientos en tiempo real")
         }
-
-=======
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
         // Configure adapters
         adapterDashboardRec = DashboardHorizontalAdapter(emptyList(), showNewBadge = false) { cancion, pos ->
             reproducirDesdeDashboard(adapterDashboardRec.canciones, pos)
@@ -1501,7 +1499,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         rvNuevas?.adapter = adapterDashboardNuevas
     }
 
-<<<<<<< HEAD
     private fun cargarCancionesPorGenero(generoKey: String, titulo: String) {
         val etBusqueda = findViewById<EditText>(R.id.et_busqueda)
         cambiarPestaña(TAB_NUBE, etBusqueda)
@@ -1534,9 +1531,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             progressBarMain.visibility = View.GONE
         }
     }
-
-=======
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
     private fun reproducirDesdeDashboard(lista: List<Cancion>, pos: Int) {
         if (lista.isNotEmpty() && pos in lista.indices) {
             val cancion = lista[pos]
@@ -1584,7 +1578,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                         adapterDashboardRec.actualizarLista(recSongs)
                     }
 
-<<<<<<< HEAD
                     // 2. Cargar de VERDAD las más escuchadas globales desde YouTube (Sin mezclar con historial local)
                     try {
                         val respuestaTendencias = api.obtenerMasEscuchadas(10)
@@ -1594,13 +1587,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                             api.buscarCancion("exitos musica tendencias del momento youtube").canciones.take(5)
                         }
                         if (popSongs.isNotEmpty()) {
-=======
-                    // 2. Cargar de VERDAD las más escuchadas / tendencia desde YouTube
-                    try {
-                        val respuestaTendencias = api.buscarCancion("exitos musica tendencias del momento youtube")
-                        if (respuestaTendencias.canciones.isNotEmpty()) {
-                            val popSongs = respuestaTendencias.canciones.take(5)
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
                             adapterDashboardPop.actualizarLista(popSongs)
                         }
                     } catch (e: Exception) {
@@ -1609,7 +1595,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
                     // 3. Cargar de VERDAD los nuevos lanzamientos musicales desde YouTube
                     try {
-<<<<<<< HEAD
                         val respuestaNuevas = api.obtenerNuevosLanzamientos(10)
                         val newSongs = if (respuestaNuevas.canciones.isNotEmpty()) {
                             respuestaNuevas.canciones.take(6)
@@ -1617,11 +1602,6 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                             api.buscarCancion("nuevos lanzamientos estrenos canciones oficiales youtube").canciones.take(6)
                         }
                         if (newSongs.isNotEmpty()) {
-=======
-                        val respuestaNuevas = api.buscarCancion("nuevos lanzamientos estrenos canciones oficiales youtube")
-                        if (respuestaNuevas.canciones.isNotEmpty()) {
-                            val newSongs = respuestaNuevas.canciones.take(6)
->>>>>>> df8fb31d0b3c925be912fcc25ba2fe692bfaa7ff
                             adapterDashboardNuevas.actualizarLista(newSongs)
                         }
                     } catch (e: Exception) {

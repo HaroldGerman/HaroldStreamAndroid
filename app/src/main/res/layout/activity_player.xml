@@ -287,6 +287,32 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <!-- Letras -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/btn_lyrics"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_sort_by_size"
+                app:tint="?attr/textMainColor"
+                android:scaleType="fitCenter"
+                android:contentDescription="Letras" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Letras"
+                android:textColor="?attr/textSecColor"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
         <!-- Compartir -->
         <LinearLayout
             android:layout_width="0dp"
@@ -299,7 +325,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_share_thin"
+                android:src="@android:drawable/ic_menu_share"
                 app:tint="?attr/textMainColor"
                 android:scaleType="fitCenter"
                 android:contentDescription="Compartir" />
