@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         const val TAB_FAVORITAS = 1
         const val TAB_DESCARGADAS = 2
         const val TAB_ALBUMES = 3
+        const val TAB_PLAYLISTS = 4
         const val DEFAULT_URL = "https://haroldstream.me/"
     }
 
@@ -255,6 +256,9 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         btnTabFavoritas.setOnClickListener { cambiarPestaña(TAB_FAVORITAS, etBusqueda) }
         btnTabDescargadas.setOnClickListener { cambiarPestaña(TAB_DESCARGADAS, etBusqueda) }
 
+        val btnTabPlaylists = findViewById<Button>(R.id.btn_tab_playlists)
+        btnTabPlaylists?.setOnClickListener { cambiarPestaña(TAB_PLAYLISTS, etBusqueda) }
+
         val btnTabAlbumes = findViewById<Button>(R.id.btn_tab_albumes)
         btnTabAlbumes?.setOnClickListener { cambiarPestaña(TAB_ALBUMES, etBusqueda) }
 
@@ -293,22 +297,22 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         // 5c. Barra de Navegación Inferior Fija
         val navInicio = findViewById<View>(R.id.nav_inicio)
         val navBuscar = findViewById<View>(R.id.nav_buscar)
+        val navPlaylists = findViewById<View>(R.id.nav_playlists)
         val navFavoritas = findViewById<View>(R.id.nav_favoritas)
         val navDescargas = findViewById<View>(R.id.nav_descargas)
 
         navInicio?.setOnClickListener {
-            // Limpiar búsqueda y mostrar dashboard de inicio
             etBusqueda.setText("")
             actualizarBottomNavSelection(R.id.nav_inicio)
             tabActual = TAB_NUBE
             actualizarEstadoPestañas(etBusqueda)
+            ocultarSugerenciasYTeclado()
             
             findViewById<View>(R.id.layout_app_main_content)?.visibility = View.GONE
             findViewById<View>(R.id.scroll_inicio_dashboard)?.visibility = View.VISIBLE
             cargarDatosDashboard()
         }
         navBuscar?.setOnClickListener {
-            // Mostrar buscador con últimos resultados sin re-ejecutar búsqueda
             actualizarBottomNavSelection(R.id.nav_buscar)
             tabActual = TAB_NUBE
             actualizarEstadoPestañas(etBusqueda)
@@ -319,11 +323,13 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             etBusqueda.requestFocus()
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             imm.showSoftInput(etBusqueda, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
-            // Mostrar últimos resultados si hay texto en el buscador
             val textoActual = etBusqueda.text.toString().trim()
             if (textoActual.isEmpty()) {
                 mostrarHistorialBusquedaGlobal()
             }
+        }
+        navPlaylists?.setOnClickListener {
+            cambiarPestaña(TAB_PLAYLISTS, etBusqueda)
         }
         navFavoritas?.setOnClickListener {
             cambiarPestaña(TAB_FAVORITAS, etBusqueda)
@@ -718,9 +724,19 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
     }
 
+    private fun ocultarSugerenciasYTeclado() {
+        val etBusqueda = findViewById<EditText>(R.id.et_busqueda)
+        val cvSugerenciasContainer = findViewById<View>(R.id.cv_sugerencias_container)
+        cvSugerenciasContainer?.visibility = View.GONE
+        etBusqueda?.clearFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+        imm?.hideSoftInputFromWindow(etBusqueda?.windowToken, 0)
+    }
+
     private fun cambiarPestaña(nuevaPestaña: Int, etBusqueda: EditText) {
         tabActual = nuevaPestaña
         actualizarEstadoPestañas(etBusqueda)
+        ocultarSugerenciasYTeclado()
 
         tvResultadosCounter.visibility = View.GONE
 
@@ -744,6 +760,12 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                 } else {
                     cargarHistorialYRecomendaciones()
                 }
+            }
+            TAB_PLAYLISTS -> {
+                actualizarBottomNavSelection(R.id.nav_playlists)
+                layoutMainContent?.visibility = View.VISIBLE
+                scrollDashboard?.visibility = View.GONE
+                cargarPestañaPlaylists()
             }
             TAB_FAVORITAS -> {
                 actualizarBottomNavSelection(R.id.nav_favoritas)
@@ -771,13 +793,16 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     }
 
     private fun actualizarEstadoPestañas(etBusqueda: EditText) {
+        val btnTabPlaylists = findViewById<Button>(R.id.btn_tab_playlists)
         val btnTabAlbumes = findViewById<Button>(R.id.btn_tab_albumes)
         btnTabNube.setBackgroundResource(if (tabActual == TAB_NUBE) R.drawable.bg_pill_active else R.drawable.bg_pill_inactive)
+        btnTabPlaylists?.setBackgroundResource(if (tabActual == TAB_PLAYLISTS) R.drawable.bg_pill_active else R.drawable.bg_pill_inactive)
         btnTabFavoritas.setBackgroundResource(if (tabActual == TAB_FAVORITAS) R.drawable.bg_pill_active else R.drawable.bg_pill_inactive)
         btnTabDescargadas.setBackgroundResource(if (tabActual == TAB_DESCARGADAS) R.drawable.bg_pill_active else R.drawable.bg_pill_inactive)
         btnTabAlbumes?.setBackgroundResource(if (tabActual == TAB_ALBUMES) R.drawable.bg_pill_active else R.drawable.bg_pill_inactive)
 
         btnTabNube.setTextColor(if (tabActual == TAB_NUBE) Color.parseColor("#FFFFFF") else Color.parseColor("#788295"))
+        btnTabPlaylists?.setTextColor(if (tabActual == TAB_PLAYLISTS) Color.parseColor("#FFFFFF") else Color.parseColor("#788295"))
         btnTabFavoritas.setTextColor(if (tabActual == TAB_FAVORITAS) Color.parseColor("#FFFFFF") else Color.parseColor("#788295"))
         btnTabDescargadas.setTextColor(if (tabActual == TAB_DESCARGADAS) Color.parseColor("#FFFFFF") else Color.parseColor("#788295"))
         btnTabAlbumes?.setTextColor(if (tabActual == TAB_ALBUMES) Color.parseColor("#FFFFFF") else Color.parseColor("#788295"))
@@ -791,6 +816,8 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         val tvInicio = findViewById<TextView>(R.id.tv_nav_inicio)
         val ivBuscar = findViewById<ImageView>(R.id.iv_nav_buscar)
         val tvBuscar = findViewById<TextView>(R.id.tv_nav_buscar)
+        val ivPlaylists = findViewById<ImageView>(R.id.iv_nav_playlists)
+        val tvPlaylists = findViewById<TextView>(R.id.tv_nav_playlists)
         val ivFavoritas = findViewById<ImageView>(R.id.iv_nav_favoritas)
         val tvFavoritas = findViewById<TextView>(R.id.tv_nav_favoritas)
         val ivDescargas = findViewById<ImageView>(R.id.iv_nav_descargas)
@@ -801,6 +828,9 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
         ivBuscar?.setColorFilter(if (idSeleccionado == R.id.nav_buscar) violetColor else secColor)
         tvBuscar?.setTextColor(if (idSeleccionado == R.id.nav_buscar) violetColor else secColor)
+
+        ivPlaylists?.setColorFilter(if (idSeleccionado == R.id.nav_playlists) violetColor else secColor)
+        tvPlaylists?.setTextColor(if (idSeleccionado == R.id.nav_playlists) violetColor else secColor)
 
         ivFavoritas?.setColorFilter(if (idSeleccionado == R.id.nav_favoritas) violetColor else secColor)
         tvFavoritas?.setTextColor(if (idSeleccionado == R.id.nav_favoritas) violetColor else secColor)
@@ -929,17 +959,40 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         tvResultadosCounter.visibility = View.VISIBLE
     }
 
+    private fun cargarPestañaPlaylists() {
+        ocultarSugerenciasYTeclado()
+        val rvResultados = findViewById<RecyclerView>(R.id.rv_resultados)
+        rvResultados?.adapter = playlistAdapter
+
+        val customPlaylists = LocalMusicManager.obtenerPlaylistsPersonalizadas(this)
+        val customMapped = customPlaylists.map { cp ->
+            Playlist(
+                titulo = cp.nombre,
+                url = "custom:${cp.id}",
+                thumbnail = if (cp.canciones.isNotEmpty()) cp.canciones[0].thumbnail else null,
+                video_count = cp.canciones.size,
+                canal = "${cp.canciones.size} ${if (cp.canciones.size == 1) "canción" else "canciones"}"
+            )
+        }
+
+        tvSeccionTitulo.text = "Playlists (${customPlaylists.size})"
+        playlistAdapter.actualizarLista(customMapped)
+        progressBarMain.visibility = View.GONE
+    }
+
     private fun cargarPestañaFavoritas() {
+        ocultarSugerenciasYTeclado()
         val favs = LocalMusicManager.obtenerFavoritos(this)
         listaCancionesActuales = favs
-        tvSeccionTitulo.text = "⭐ Mis Canciones Favoritas (${favs.size})"
+        tvSeccionTitulo.text = "Mis Canciones Favoritas (${favs.size})"
         adapter.actualizarLista(favs)
     }
 
     private fun cargarPestañaDescargadas() {
+        ocultarSugerenciasYTeclado()
         val locales = LocalMusicManager.cargarCancionesLocalesMP3(this)
         listaCancionesActuales = locales
-        tvSeccionTitulo.text = "📥 Canciones en Celular / Offline (${locales.size})"
+        tvSeccionTitulo.text = "Canciones Guardadas Offline (${locales.size})"
         adapter.actualizarLista(locales)
     }
 
@@ -1245,6 +1298,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     private var cacheAlbumesPopulares: List<Playlist>? = null
 
     private fun cargarAlbumes(query: String) {
+        ocultarSugerenciasYTeclado()
         val api = obtenerApiService()
         if (api == null) {
             tvSeccionTitulo.text = "Sin conexión"
@@ -1255,28 +1309,16 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         val rvResultados = findViewById<RecyclerView>(R.id.rv_resultados)
         rvResultados?.adapter = playlistAdapter
 
-        val customPlaylists = LocalMusicManager.obtenerPlaylistsPersonalizadas(this)
-        val customMapped = customPlaylists.map { cp ->
-            Playlist(
-                titulo = "📂 ${cp.nombre}",
-                url = "custom:${cp.id}",
-                thumbnail = if (cp.canciones.isNotEmpty()) cp.canciones[0].thumbnail else null,
-                video_count = cp.canciones.size,
-                canal = "${cp.canciones.size} canciones"
-            )
-        }
-
         if (query.isEmpty() && !cacheAlbumesPopulares.isNullOrEmpty()) {
-            tvSeccionTitulo.text = "💿 Playlists y Álbumes"
-            playlistAdapter.actualizarLista(customMapped + cacheAlbumesPopulares!!)
+            tvSeccionTitulo.text = "Álbumes"
+            playlistAdapter.actualizarLista(cacheAlbumesPopulares!!)
             progressBarMain.visibility = View.GONE
             return
         }
 
         val terminoBusqueda = if (query.isNotEmpty()) query else "album popular completo exitos"
-        tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Álbumes de \"$query\"" else "💿 Playlists y Álbumes"
+        tvSeccionTitulo.text = if (query.isNotEmpty()) "Álbumes de \"$query\"" else "Álbumes"
         progressBarMain.visibility = View.VISIBLE
-        playlistAdapter.actualizarLista(customMapped)
 
         lifecycleScope.launch {
             try {
@@ -1285,10 +1327,9 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                     if (query.isEmpty()) {
                         cacheAlbumesPopulares = respuesta.playlists
                     }
-                    tvSeccionTitulo.text = if (query.isNotEmpty()) "💿 Álbumes de \"$query\" (${respuesta.playlists.size})" else "💿 Playlists y Álbumes"
-                    playlistAdapter.actualizarLista(customMapped + respuesta.playlists)
+                    tvSeccionTitulo.text = if (query.isNotEmpty()) "Álbumes de \"$query\" (${respuesta.playlists.size})" else "Álbumes"
+                    playlistAdapter.actualizarLista(respuesta.playlists)
                 } else {
-                    // Fallback: Si no hay playlists, intentar buscar videos normales de tipo álbum
                     val respuestaCanciones = api.buscarCancion("$terminoBusqueda completo")
                     val albumes = respuestaCanciones.canciones.filter { cancion ->
                         val t = (cancion.titulo ?: "").lowercase()
@@ -1298,12 +1339,10 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                     if (albumes.isNotEmpty()) {
                         rvResultados?.adapter = adapter
                         listaCancionesActuales = albumes
-                        tvSeccionTitulo.text = "💿 Álbumes de artistas"
+                        tvSeccionTitulo.text = "Álbumes de artistas"
                         adapter.actualizarLista(albumes)
                     } else {
-                        if (customMapped.isEmpty()) {
-                            Toast.makeText(this@MainActivity, "No se encontraron álbumes", Toast.LENGTH_SHORT).show()
-                        }
+                        Toast.makeText(this@MainActivity, "No se encontraron álbumes", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
@@ -1458,23 +1497,23 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         }
 
         // Configurar clics en tarjetas de género musical
-        findViewById<View>(R.id.card_genero_reggaeton)?.setOnClickListener { cargarCancionesPorGenero("reggaeton", "🔥 Reggaetón & Urbano") }
-        findViewById<View>(R.id.card_genero_rock)?.setOnClickListener { cargarCancionesPorGenero("rock", "🎸 Rock & Alternativo") }
-        findViewById<View>(R.id.card_genero_pop)?.setOnClickListener { cargarCancionesPorGenero("pop", "🎤 Pop Hits") }
-        findViewById<View>(R.id.card_genero_latin)?.setOnClickListener { cargarCancionesPorGenero("latin", "💃 Música Latina & Salsa") }
-        findViewById<View>(R.id.card_genero_electro)?.setOnClickListener { cargarCancionesPorGenero("electro", "🎧 Electro & EDM") }
-        findViewById<View>(R.id.card_genero_reggae)?.setOnClickListener { cargarCancionesPorGenero("reggae", "🌴 Reggae & Dub") }
-        findViewById<View>(R.id.card_genero_hiphop)?.setOnClickListener { cargarCancionesPorGenero("hiphop", "📻 Hip Hop & Trap") }
-        findViewById<View>(R.id.card_genero_cumbia)?.setOnClickListener { cargarCancionesPorGenero("cumbia", "🎷 Cumbia & Tropical") }
+        findViewById<View>(R.id.card_genero_reggaeton)?.setOnClickListener { cargarCancionesPorGenero("reggaeton", "Reggaetón & Urbano") }
+        findViewById<View>(R.id.card_genero_rock)?.setOnClickListener { cargarCancionesPorGenero("rock", "Rock & Alternativo") }
+        findViewById<View>(R.id.card_genero_pop)?.setOnClickListener { cargarCancionesPorGenero("pop", "Pop Hits") }
+        findViewById<View>(R.id.card_genero_latin)?.setOnClickListener { cargarCancionesPorGenero("latin", "Música Latina & Salsa") }
+        findViewById<View>(R.id.card_genero_electro)?.setOnClickListener { cargarCancionesPorGenero("electro", "Electro & EDM") }
+        findViewById<View>(R.id.card_genero_reggae)?.setOnClickListener { cargarCancionesPorGenero("reggae", "Reggae & Dub") }
+        findViewById<View>(R.id.card_genero_hiphop)?.setOnClickListener { cargarCancionesPorGenero("hiphop", "Hip Hop & Trap") }
+        findViewById<View>(R.id.card_genero_cumbia)?.setOnClickListener { cargarCancionesPorGenero("cumbia", "Cumbia & Tropical") }
 
         findViewById<View>(R.id.tv_dash_ver_todo_rec)?.setOnClickListener {
-            cargarVerTodoNuevas("✨ Recomendadas para ti (Nuevos lanzamientos)")
+            cargarVerTodoNuevas("Recomendadas para ti")
         }
         findViewById<View>(R.id.tv_dash_ver_todo_pop)?.setOnClickListener {
-            cargarVerTodoMasEscuchadas("🔥 Las más escuchadas en YouTube")
+            cargarVerTodoMasEscuchadas("Las más escuchadas")
         }
         findViewById<View>(R.id.tv_dash_ver_todo_nuevas)?.setOnClickListener {
-            cargarVerTodoNuevas("⚡ Nuevos lanzamientos en tiempo real")
+            cargarVerTodoNuevas("Nuevos lanzamientos")
         }
         // Configure adapters
         adapterDashboardRec = DashboardHorizontalAdapter(emptyList(), showNewBadge = false) { cancion, pos ->

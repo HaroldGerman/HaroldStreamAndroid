@@ -330,7 +330,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🎵 Playlists por Género Musical"
+                android:text="Explorar Géneros Musicales"
                 android:textColor="?attr/textMainColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -352,8 +352,8 @@
                 <!-- Reggaeton -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_reggaeton"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -364,41 +364,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🔥"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Reggaetón"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Reggaetón"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Perreo &amp; Urbano"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Perreo &amp; Urbano"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Rock -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_rock"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -409,41 +398,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🎸"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Rock"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Rock"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Clásicos &amp; Hits"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Clásicos &amp; Hits"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Pop -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_pop"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -454,41 +432,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🎤"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Pop"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pop"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Éxitos Mundiales"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Éxitos Mundiales"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Latino -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_latin"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -499,41 +466,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💃"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Latino"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Latino"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Salsa &amp; Bachata"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Salsa &amp; Bachata"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Electro -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_electro"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -544,41 +500,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🎧"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Electro"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Electro"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="EDM &amp; Party"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="EDM &amp; Party"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Reggae -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_reggae"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -589,41 +534,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🌴"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Reggae"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Reggae"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Dub &amp; Roots"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Dub &amp; Roots"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Hip Hop -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_hiphop"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -634,41 +568,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📻"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Hip Hop"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Hip Hop"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Trap &amp; Boom Bap"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Trap &amp; Boom Bap"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Cumbia -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_genero_cumbia"
-                    android:layout_width="150dp"
-                    android:layout_height="64dp"
+                    android:layout_width="140dp"
+                    android:layout_height="58dp"
                     android:layout_margin="4dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -679,33 +602,22 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp">
+                        android:paddingHorizontal="14dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🎷"
-                            android:textSize="22sp" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                            android:text="Cumbia"
+                            android:textColor="?attr/textMainColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="10dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Cumbia"
-                                android:textColor="?attr/textMainColor"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tropical &amp; Fiesta"
-                                android:textColor="?attr/textSecColor"
-                                android:textSize="10sp" />
-                        </LinearLayout>
+                            android:text="Tropical &amp; Fiesta"
+                            android:textColor="?attr/textSecColor"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -757,7 +669,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🔥 Las más escuchadas en YouTube"
+                android:text="Las más escuchadas"
                 android:textColor="?attr/textMainColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />

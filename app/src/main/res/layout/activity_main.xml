@@ -211,6 +211,18 @@
                     android:background="@drawable/bg_pill_inactive" />
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_tab_playlists"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:text="Playlists"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/textSecColor"
+                    android:paddingHorizontal="18dp"
+                    android:background="@drawable/bg_pill_inactive" />
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_tab_descargadas"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
@@ -445,6 +457,31 @@
                 android:text="Buscar"
                 android:textSize="11sp"
                 android:textColor="@color/violet_primary"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_playlists"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/iv_nav_playlists"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_list"
+                app:tint="?attr/textSecColor"/>
+            <TextView
+                android:id="@+id/tv_nav_playlists"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Playlists"
+                android:textSize="11sp"
+                android:textColor="?attr/textSecColor"
                 android:layout_marginTop="3dp"/>
         </LinearLayout>
 
