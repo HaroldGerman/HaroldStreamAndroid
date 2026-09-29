@@ -126,7 +126,7 @@ object UpdateManager {
                     val body = response.body ?: throw Exception("Cuerpo de respuesta vacío")
                     val contentLength = body.contentLength()
                     
-                    val file = File(activity.cacheDir, "HaroldStream_update.apk")
+                    val file = File(activity.cacheDir, "TushNH_update.apk")
                     if (file.exists()) file.delete()
 
                     val inputStream = body.byteStream()
