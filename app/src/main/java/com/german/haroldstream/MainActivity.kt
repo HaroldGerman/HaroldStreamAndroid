@@ -435,9 +435,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
             }
         }
 
-        // --- LISTENERS DE REGISTRO Y VERIFICACIÓN PIN VIA WHATSAPP ---
-
-        // PASO 1: Enviar Registro y Solicitar PIN por WhatsApp
+        // --- REGISTRO DIRECTO: SIN PIN NI VERIFICACIÓN ---
         btnRegEnviar.setOnClickListener {
             val nombre = etRegNombre.text.toString().trim()
             val telefono = etRegTelefono.text.toString().trim()
@@ -448,17 +446,18 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
             progressBarMain.visibility = View.VISIBLE
             lifecycleScope.launch {
-                val result = UserAuthManager.solicitarCodigoPin(this@MainActivity, DEFAULT_URL, nombre, telefono)
+                val result = UserAuthManager.registrarUsuario(this@MainActivity, DEFAULT_URL, nombre, telefono)
                 progressBarMain.visibility = View.GONE
                 if (result.isSuccess) {
                     val resMap = result.getOrNull()
                     val status = resMap?.get("status") as? String
-                    if (status == "error") {
-                        val msg = resMap["message"] as? String ?: "Error al procesar el registro"
-                        Toast.makeText(this@MainActivity, "❌ $msg", Toast.LENGTH_LONG).show()
+                    val approved = (resMap?.get("approved") as? Boolean) == true || resMap?.get("user_status") == "approved"
+                    if (status == "success" && approved) {
+                        Toast.makeText(this@MainActivity, "✅ Registro completado", Toast.LENGTH_SHORT).show()
+                        desbloquearApp()
                     } else {
-                        Toast.makeText(this@MainActivity, "📱 Solicitud recibida. Revisa tu número de celular o WhatsApp para recibir tu PIN.", Toast.LENGTH_LONG).show()
-                        mostrarPantallaCodigoPin()
+                        val msg = resMap?.get("message") as? String ?: "Error al procesar el registro"
+                        Toast.makeText(this@MainActivity, "❌ $msg", Toast.LENGTH_LONG).show()
                     }
                 } else {
                     val ex = result.exceptionOrNull()
@@ -559,8 +558,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
                 val status = res.getOrNull()
                 when (status) {
                     "approved" -> desbloquearApp()
-                    "code_sent" -> mostrarPantallaCodigoPin()
-                    "pending" -> mostrarPantallaPendiente()
+                    "code_sent", "pending" -> mostrarPantallaRegistro()
                     "blocked" -> {
                         mostrarPantallaPendiente()
                         Toast.makeText(this@MainActivity, "🚫 Acceso Bloqueado por el Administrador", Toast.LENGTH_LONG).show()
