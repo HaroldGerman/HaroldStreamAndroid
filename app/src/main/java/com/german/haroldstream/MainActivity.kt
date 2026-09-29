@@ -1206,6 +1206,7 @@ class MainActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
     private fun abrirPlayerActivity(cancion: Cancion, streamUrl: String) {
         val intent = Intent(this, PlayerActivity::class.java).apply {
             putExtra(PlayerActivity.EXTRA_STREAM_URL, streamUrl)
+            putExtra(PlayerActivity.EXTRA_ORIGINAL_URL, cancion.url)
             putExtra(PlayerActivity.EXTRA_TITLE, cancion.titulo ?: "Canción")
             putExtra(PlayerActivity.EXTRA_THUMBNAIL, cancion.thumbnail)
             putExtra(PlayerActivity.EXTRA_CANAL, cancion.canal)
