@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val tushnhKeystorePath = System.getenv("TUSHNH_KEYSTORE_PATH")
+val tushnhStorePassword = System.getenv("TUSHNH_STORE_PASSWORD")
+val tushnhKeyAlias = System.getenv("TUSHNH_KEY_ALIAS")
+val tushnhKeyPassword = System.getenv("TUSHNH_KEY_PASSWORD")
+
 android {
     namespace = "com.german.haroldstream"
     compileSdk {
@@ -20,8 +25,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (!tushnhKeystorePath.isNullOrBlank() &&
+            !tushnhStorePassword.isNullOrBlank() &&
+            !tushnhKeyAlias.isNullOrBlank() &&
+            !tushnhKeyPassword.isNullOrBlank()) {
+            create("tushnhRelease") {
+                storeFile = file(tushnhKeystorePath)
+                storePassword = tushnhStorePassword
+                keyAlias = tushnhKeyAlias
+                keyPassword = tushnhKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("tushnhRelease")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
