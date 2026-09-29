@@ -52,6 +52,11 @@
             android:exported="false"
             android:theme="@style/Theme.HaroldSound" />
 
+        <activity
+            android:name=".YouTubeFallbackActivity"
+            android:exported="false"
+            android:theme="@style/Theme.HaroldSound" />
+
         <service
             android:name=".PlaybackService"
             android:foregroundServiceType="mediaPlayback"
