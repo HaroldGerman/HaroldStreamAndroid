@@ -1,6 +1,6 @@
 {
-    "versionCode": 16,
-    "versionName": "16.0",
-    "releaseNotes": "Añadida función de compartir fragmentos de video y audio a WhatsApp.",
+    "versionCode": 52,
+    "versionName": "52.0",
+    "releaseNotes": "TushNH v52: cambio de nombre oficial, registro directo sin PIN, backend en la nube y persistencia de datos.",
     "minVersionCode": 1
 }
