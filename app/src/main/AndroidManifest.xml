@@ -55,6 +55,9 @@
         <activity
             android:name=".YouTubeFallbackActivity"
             android:exported="false"
+            android:supportsPictureInPicture="true"
+            android:resizeableActivity="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:theme="@style/Theme.HaroldSound" />
 
         <service
