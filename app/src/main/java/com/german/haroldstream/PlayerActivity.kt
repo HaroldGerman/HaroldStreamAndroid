@@ -45,6 +45,7 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
 
     companion object {
         const val EXTRA_STREAM_URL = "extra_stream_url"
+        const val EXTRA_ORIGINAL_URL = "extra_original_url"
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_THUMBNAIL = "extra_thumbnail"
         const val EXTRA_CANAL = "extra_canal"
@@ -72,11 +73,17 @@ class PlayerActivity : AppCompatActivity(), PlayerManager.PlayerStateListener {
         btnDownloadMobile = findViewById(R.id.btn_download_mobile)
 
         val streamUrl = intent.getStringExtra(EXTRA_STREAM_URL)
-        val title = intent.getStringExtra(EXTRA_TITLE) ?: "HaroldSound Audio"
+        val originalUrl = intent.getStringExtra(EXTRA_ORIGINAL_URL)
+        val title = intent.getStringExtra(EXTRA_TITLE) ?: "TushNH Audio"
         val thumbnail = intent.getStringExtra(EXTRA_THUMBNAIL)
         val canal = intent.getStringExtra(EXTRA_CANAL) ?: "Desconocido"
 
-        currentCancionLocal = Cancion(titulo = title, thumbnail = thumbnail, canal = canal, url = streamUrl)
+        currentCancionLocal = Cancion(
+            titulo = title,
+            thumbnail = thumbnail,
+            canal = canal,
+            url = originalUrl ?: streamUrl
+        )
 
         tvTitle.text = title
         tvArtist.text = canal
