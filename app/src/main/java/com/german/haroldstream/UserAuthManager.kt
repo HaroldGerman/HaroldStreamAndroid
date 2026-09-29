@@ -57,7 +57,7 @@ object UserAuthManager {
             .apply()
     }
 
-    suspend fun solicitarCodigoPin(context: Context, serverUrl: String, nombre: String, telefono: String): Result<Map<String, Any>> {
+    suspend fun registrarUsuario(context: Context, serverUrl: String, nombre: String, telefono: String): Result<Map<String, Any>> {
         return withContext(Dispatchers.IO) {
             try {
                 val devId = obtenerDeviceId(context)
@@ -70,7 +70,7 @@ object UserAuthManager {
 
                 var baseUrl = serverUrl.trim()
                 if (!baseUrl.endsWith("/")) baseUrl += "/"
-                val url = "${baseUrl}api/send-code"
+                val url = "${baseUrl}api/register"
 
                 val request = Request.Builder()
                     .url(url)
@@ -81,9 +81,10 @@ object UserAuthManager {
                 val responseStr = response.body?.string() ?: ""
 
                 if (response.isSuccessful) {
-                    guardarDatosUsuarioLocal(context, nombre, telefono, false)
                     val mapType = object : com.google.gson.reflect.TypeToken<Map<String, Any>>() {}.type
                     val resMap: Map<String, Any> = Gson().fromJson(responseStr, mapType)
+                    val approved = (resMap["approved"] as? Boolean) == true || resMap["user_status"] == "approved"
+                    guardarDatosUsuarioLocal(context, nombre, telefono, approved)
                     Result.success(resMap)
                 } else {
                     Result.failure(Exception("Error en servidor: ${response.code}"))
