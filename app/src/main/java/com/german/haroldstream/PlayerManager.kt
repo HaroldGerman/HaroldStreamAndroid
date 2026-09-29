@@ -1,12 +1,14 @@
 package com.german.haroldstream
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.PlaybackException
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -30,6 +32,8 @@ object  PlayerManager {
 
     var onAutoPlayNextListener: ((Cancion) -> Unit)? = null
     var onAutoPlayRelatedListener: ((Cancion?) -> Unit)? = null
+
+    private var fallbackOpenedForStream: String? = null
 
     // Estado de Shuffle y Repeat
     var isShuffleOn: Boolean = false
@@ -96,6 +100,31 @@ object  PlayerManager {
                             siguienteCancion(appContext)
                         }
                     }
+
+                    override fun onPlayerError(error: PlaybackException) {
+                        val cancion = currentCancion
+                        val failedStream = currentStreamUrl
+                        val originalUrl = cancion?.url
+
+                        if (
+                            !originalUrl.isNullOrBlank() &&
+                            originalUrl.startsWith("http") &&
+                            !originalUrl.contains("/descargas/") &&
+                            fallbackOpenedForStream != failedStream
+                        ) {
+                            fallbackOpenedForStream = failedStream
+                            newPlayer.stop()
+
+                            val intent = Intent(appContext, YouTubeFallbackActivity::class.java).apply {
+                                putExtra(YouTubeFallbackActivity.EXTRA_YOUTUBE_URL, originalUrl)
+                                putExtra(YouTubeFallbackActivity.EXTRA_TITLE, cancion?.titulo ?: "Canción")
+                                putExtra(YouTubeFallbackActivity.EXTRA_ARTIST, cancion?.canal ?: "")
+                                putExtra(YouTubeFallbackActivity.EXTRA_THUMBNAIL, cancion?.thumbnail ?: "")
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            }
+                            appContext.startActivity(intent)
+                        }
+                    }
                 })
 
                 player = newPlayer
@@ -116,6 +145,7 @@ object  PlayerManager {
             val p = getOrCreatePlayer(context)
             currentCancion = cancion
             currentStreamUrl = streamUrl
+            fallbackOpenedForStream = null
 
             val mediaMetadata = MediaMetadata.Builder()
                 .setTitle(cancion.titulo ?: "Canción")
