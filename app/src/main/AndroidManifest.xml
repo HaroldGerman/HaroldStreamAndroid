@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    
 
     <application
         android:allowBackup="true"
@@ -36,14 +35,27 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.HaroldSound">
-            <!-- NUEVO INTENT FILTER CON ESQUEMA PROPIO -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <!-- Tu protocolo personalizado -->
                 <data android:scheme="haroldstream" android:host="app" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DronnkPlayActivity"
+            android:exported="true"
+            android:theme="@style/Theme.HaroldSound">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tushnh" android:host="play" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.german.haroldstream.PLAY_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
@@ -79,5 +91,4 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
     </application>
-
 </manifest>
