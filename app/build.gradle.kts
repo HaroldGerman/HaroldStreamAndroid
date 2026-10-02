@@ -19,8 +19,8 @@ android {
         applicationId = "com.german.haroldstream"
         minSdk = 24
         targetSdk = 36
-        versionCode = 54
-        versionName = "54.0"
+        versionCode = 55
+        versionName = "55.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -79,24 +79,14 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    
-    // CardView y RecyclerView
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.google.android.material:material:1.12.0")
-    
-    // Retrofit para peticiones HTTP
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-    // Media3 (ExoPlayer, UI, Session) para reproductor multimedia y notificaciones del sistema
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
     implementation("androidx.media3:media3-session:1.2.0")
-
-    // Corrutinas para peticiones asíncronas
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    // Coil para cargar imágenes desde URLs fácilmente
     implementation("io.coil-kt:coil:2.6.0")
 }
